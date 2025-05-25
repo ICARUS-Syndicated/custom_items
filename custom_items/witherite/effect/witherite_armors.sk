@@ -1,10 +1,6 @@
 every tick:
     loop all players:
         if all:
-            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteHelmet}"
-            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteChestplate}"
-            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteLeggings}"
-            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteBoots}"
             nbt of loop-player's helmet has tag "CustomItem"
             nbt of loop-player's chestplate has tag "CustomItem"
             nbt of loop-player's leggings has tag "CustomItem"
@@ -23,10 +19,6 @@ every tick:
 
 on damage:
     if all:
-        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteHelmet}"
-        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteChestplate}"
-        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteLeggings}"
-        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteBoots}"
         nbt of victim's helmet has tag "CustomItem"
         nbt of victim's chestplate has tag "CustomItem"
         nbt of victim's leggings has tag "CustomItem"

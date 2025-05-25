@@ -2,7 +2,7 @@ on right click:
     set {_t} to slot 40 of player
     if all:
         nbt of player's tool has tag "CustomItem"
-        string tag "CustomItem" of nbt of player's tool is "CoroniteBlade"
+        string tag "CustomItem" of nbt of player's tool is "CoroniteSword"
         nbt of {_t} has tag "CustomItem"
         string tag "CustomItem" of nbt of {_t} is "SunlitTemplate"
     then:
@@ -21,7 +21,7 @@ on right click:
 #    set {_m} to slot 1 of event-inventory
 #    if all:
 #        nbt of {_s} has tag "CustomItem"
-#        string tag "CustomItem" of nbt of {_s} is "CoroniteBlade"
+#        string tag "CustomItem" of nbt of {_s} is "CoroniteSword"
 #        nbt of {_m} has tag "CustomItem"
 #        string tag "CustomItem" of nbt of {_m} is "SunlitTemplate"
 #    then:

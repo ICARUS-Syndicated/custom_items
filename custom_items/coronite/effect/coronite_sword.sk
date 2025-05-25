@@ -2,13 +2,13 @@ on damage:
     attacker is a player
     if nbt of attacker's tool has tag "CustomItem":
         set {_ItemName} to string tag "CustomItem" of nbt of attacker's tool
-        if {_ItemName} is "CoroniteBlade":
+        if {_ItemName} is "CoroniteSword":
             if health of victim > 8:
                 damage victim by 2 hearts with cause lava
 
 on right click with iron sword:
     if nbt of player's tool has tag "CustomItem":
         set {_ItemName} to string tag "CustomItem" of nbt of player's tool
-        if {_ItemName} is "CoroniteBlade":
+        if {_ItemName} is "CoroniteSword":
             ignite player
 

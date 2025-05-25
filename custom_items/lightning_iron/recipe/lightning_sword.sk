@@ -1,5 +1,5 @@
 on load:
-    set {_sword} to iron sword named "&d鸣雷剑" with lore "&7剑锋上闪着雷电","你最好搞个特斯拉笼保护自己" with nbt from "{CustomItem:LightningBlade}"
+    set {_sword} to iron sword named "&d鸣雷剑" with lore "&7剑锋上闪着雷电","&7你最好搞个特斯拉笼保护自己" with nbt from "{CustomItem:LightningBlade}"
     enchant {_sword} with channeling 1
     set {_i} to iron ingot named "&e雷鸣铁锭" with lore "&7雷光在金属中闪动" with nbt from "{CustomItem:LightningIron}"
     set {_d} to iron bars named "&e带电的铁棍" with lore "&7这玩意有什么用？" with nbt from "{CustomItem:LightningBars}"

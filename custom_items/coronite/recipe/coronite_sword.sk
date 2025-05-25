@@ -1,5 +1,5 @@
 on load:
-    set {_sword} to iron sword named "&d冕剑" with lore "&7来自太阳的力量" with nbt from "{CustomItem:CoroniteBlade}"
+    set {_sword} to iron sword named "&d冕剑" with lore "&7来自太阳的力量" with nbt from "{CustomItem:CoroniteSword}"
     enchant {_sword} with fire aspect 3
     set {_c} to iron ingot named "&d冕锭" with lore "&7锟斤拷烫烫烫!" with nbt from "{CustomItem:Coronite}"
     set {_b} to blaze rod

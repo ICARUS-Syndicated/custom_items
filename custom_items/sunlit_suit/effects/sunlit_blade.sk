@@ -3,7 +3,6 @@ on right click:
         nbt of player's tool has tag "CustomItem"
         string tag "CustomItem" of nbt of player's tool is "SunlitBlade"
     then:
-
         #潜行吸收岩浆提高温度
         if all:  
             player is sneaking

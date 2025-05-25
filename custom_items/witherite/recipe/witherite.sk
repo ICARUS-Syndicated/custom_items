@@ -1,6 +1,16 @@
 on load:
     set {_rwth} to charcoal named "&d凋零锭胚" with lore "&7似乎要烧一下才能用。" with nbt from "{CustomItem:WitheriteRawIngot}"
     set {_wth} to netherite ingot named "&d凋零锭" with lore "&7散发着死亡的味道。" with nbt from "{CustomItem:WitheriteIngot}"
+    set {_wth_s} to netherite sword named "&d凋零剑" with lore "&7凋零。" with nbt from "{CustomItem:WitheriteSword}"
+    enchant {_wth_s} with sharpness 7
+    set {_wth_l} to netherite leggings named "&d凋零护腿" with lore "&7终结。" with nbt from "{CustomItem:WitheriteLeggings}"
+    enchant {_wth_l} with protection 7
+    set {_wth_h} to netherite helmet named "&d凋零头盔" with lore "&7终结。" with nbt from "{CustomItem:WitheriteHelmet}"
+    enchant {_wth_h} with protection 7
+    set {_wth_c} to netherite chestplate named "&d凋零胸甲" with lore "&7终结。" with nbt from "{CustomItem:WitheriteChestplate}"
+    enchant {_wth_c} with protection 7
+    set {_wth_b} to netherite boots named "&d凋零靴子" with lore "&7终结。" with nbt from "{CustomItem:WitheriteBoots}"
+    enchant {_wth_b} with protection 7
 
     register shapeless recipe:
         id: "custom:witherite_raw_ingot"
@@ -23,3 +33,39 @@ on load:
         cooktime: 2 minutes
         experience: 20
         category: "blocks"
+
+    register shaped recipe:
+        id: "custom:witherite_sword"
+        result: {_wth_s}
+        shape: "a","a","b"
+        ingredients:
+            set ingredient of "a" to {_wth}
+            set ingredient of "b" to stick
+    
+    register smithing transform recipe:
+        id: "custom:witherite_leggings"
+        result: {_wth_l}
+        template: netherite upgrade smithing template
+        base: diamond leggings
+        addition: {_wth}
+    
+    register smithing transform recipe:
+        id: "custom:witherite_helmet"
+        result: {_wth_h}
+        template: netherite upgrade smithing template
+        base: diamond helmet
+        addition: {_wth}
+    
+    register smithing transform recipe:
+        id: "custom:witherite_chestplate"
+        result: {_wth_s}
+        template: netherite upgrade smithing template
+        base: diamond chestplate
+        addition: {_wth}
+    
+    register smithing transform recipe:
+        id: "custom:witherite_boots"
+        result: {_wth_b}
+        template: netherite upgrade smithing template
+        base: diamond boots
+        addition: {_wth}
