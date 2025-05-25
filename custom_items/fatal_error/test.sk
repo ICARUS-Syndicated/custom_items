@@ -1,0 +1,5 @@
+command /fatal <player>:
+    permission: op
+    trigger:
+        set {_l} to diamond sword with nbt from "{CustomItem:FatalError}"
+        give or drop {_l} to player

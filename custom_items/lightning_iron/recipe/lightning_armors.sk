@@ -1,0 +1,10 @@
+on load:
+    set {_h} to iron helmet named "&d雷鸣头盔" with lore "&7据说是某民族的圣物...的仿制品" with nbt from "{CustomItem:LightningHelmet}"
+    set {_ch} to iron chestplate named "&d雷鸣胸甲" with lore "&7充-充电时间！" with nbt from "{CustomItem:LightningChestplate}"
+    set {_l} to iron leggings named "&d雷鸣护腿" with lore "&7感觉有点爽" with nbt from "{CustomItem:LightningLeggings}"
+    set {_b} to iron boots named "&d雷鸣鞋子" with lore "&7电力驱动" with nbt from "{CustomItem:LightningBoots}"
+    set {_c} to iron ingot named "&e雷鸣铁锭" with lore "&7雷光在金属中闪动" with nbt from "{CustomItem:LightningIron}"
+    register new shaped recipe for {_h} using {_c},{_c},{_c},{_c},air,{_c},air,air,air with id "lightning_helmet"
+    register new shaped recipe for {_ch} using {_c},air,{_c},{_c},{_c},{_c},{_c},{_c},{_c} with id "lightning_chestplate"
+    register new shaped recipe for {_l} using {_c},{_c},{_c},{_c},air,{_c},{_c},air,{_c} with id "lightning_leggings"
+    register new shaped recipe for {_b} using air,air,air,{_c},air,{_c},{_c},air,{_c} with id "lightning_boots"

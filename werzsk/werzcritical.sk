@@ -1,0 +1,193 @@
+# WerzCritical.sk
+# 用于服务器管理员进行错误诊断的工具
+# 警告: 此脚本仅供服务器管理员使用，用于故障诊断，请勿在生产环境使用
+
+options:
+    # 设置权限前缀
+    permission: werz.critical
+    # 命令前缀
+    prefix: &c[WerzCritical]&f
+
+command /werzcritical <text>:
+    permission: {@permission}
+    permission message: {@prefix} &c你没有权限使用此命令！
+    usage: {@prefix} &c用法: /werzcritical <错误类型>
+    trigger:
+        set {_errorType} to arg-1
+        
+        if {_errorType} is "list":
+            send "{@prefix} &a可用的错误类型:"
+            send "&a- StackOverflowError"
+            send "&a- OutOfMemoryError"
+            send "&a- NullPointerException"
+            send "&a- ArrayIndexOutOfBoundsException"
+            send "&a- ArithmeticException"
+            send "&a- ClassCastException"
+            send "&a- ConcurrentModificationException"
+            send "&a- IllegalArgumentException"
+            send "&a- IllegalStateException"
+            send "&a- IndexOutOfBoundsException"
+            send "&a- NoSuchElementException"
+            send "&a- UnsupportedOperationException"
+            send "&a- NumberFormatException"
+            send "&a- ClassNotFoundException"
+            send "&a- IOException"
+            send "&a- FileNotFoundException"
+            send "&a- TimeoutException"
+            send "&a- InterruptedException"
+            stop
+        
+        send "{@prefix} &e正在尝试引发 %{_errorType}% 异常..."
+        wait 1 second
+        
+        # 调用对应的错误函数
+        if {_errorType} is "StackOverflowError":
+            triggerStackOverflowError()
+        else if {_errorType} is "OutOfMemoryError":
+            triggerOutOfMemoryError()
+        else if {_errorType} is "NullPointerException":
+            triggerNullPointerException()
+        else if {_errorType} is "ArrayIndexOutOfBoundsException":
+            triggerArrayIndexOutOfBoundsException()
+        else if {_errorType} is "ArithmeticException":
+            triggerArithmeticException()
+        # else if {_errorType} is "ClassCastException":
+        #     triggerClassCastException()
+        else if {_errorType} is "ConcurrentModificationException":
+            triggerConcurrentModificationException()
+        else if {_errorType} is "IllegalArgumentException":
+            triggerIllegalArgumentException()
+        # else if {_errorType} is "IllegalStateException":
+        #     triggerIllegalStateException()
+        else if {_errorType} is "IndexOutOfBoundsException":
+            triggerIndexOutOfBoundsException()
+        # else if {_errorType} is "NoSuchElementException":
+        #     triggerNoSuchElementException()
+        else if {_errorType} is "UnsupportedOperationException":
+            triggerUnsupportedOperationException()
+        else if {_errorType} is "NumberFormatException":
+            triggerNumberFormatException()
+        else if {_errorType} is "ClassNotFoundException":
+            triggerClassNotFoundException()
+        # else if {_errorType} is "IOException":
+        #     triggerIOException()
+        # else if {_errorType} is "FileNotFoundException":
+        #     triggerFileNotFoundException()
+        else if {_errorType} is "TimeoutException":
+            triggerTimeoutException()
+        else if {_errorType} is "InterruptedException":
+            triggerInterruptedException()
+        else:
+            send "{@prefix} &c未知的错误类型: %{_errorType}%"
+            send "{@prefix} &c使用 /werzcritical list 查看所有可用的错误类型"
+
+# 各种错误触发函数
+
+function triggerStackOverflowError():
+    # 通过无限递归触发 StackOverflowError
+    set {_trest} to true
+    while {_trest} is true:
+        recursiveFunction(1)
+    recursiveFunction(1)
+
+
+function recursiveFunction(number: number):
+    set {_next} to {_number} + 1
+    recursiveFunction({_next})
+
+function triggerOutOfMemoryError():
+    # 创建超大数组直到内存溢出
+    set {_hugeArray} to ""
+    loop 1000000 times:
+        set {_hugeArray} to "%{_hugeArray}%%loop-number%"
+        set {_hugeArrayCopy::%loop-number%} to {_hugeArray}
+
+function triggerNullPointerException():
+    # 尝试访问空对象
+    set {_nullVar} to null
+    set {_length} to length of {_nullVar}
+
+function triggerArrayIndexOutOfBoundsException():
+    # 尝试访问数组越界索引
+    set {_array::1} to "item"
+    set {_item} to {_array::999}
+
+function triggerArithmeticException():
+    # 除零错误
+    set {_x} to 1
+    set {_y} to 0
+    set {_result} to {_x} / {_y}
+
+# function triggerClassCastException():
+#     # 类型转换错误
+#     set {_entity} to last spawned entity
+#     set {_player} to {_entity} parsed as player
+#     send "Name: %name of {_player}%"
+
+function triggerConcurrentModificationException():
+    # 并发修改错误
+    set {_array::1} to "item1"
+    set {_array::2} to "item2"
+    set {_array::3} to "item3"
+    loop {_array::*}:
+        delete {_array::%loop-index%}
+
+function triggerIllegalArgumentException():
+    # 非法参数错误
+    spawn zombie at location(999999, -10, 999999, world("world"))
+
+# function triggerIllegalStateException():
+#     # 非法状态错误
+#     set {_inventory} to player's inventory
+#     close {_inventory}
+#     add diamond to {_inventory}
+
+function triggerIndexOutOfBoundsException():
+    # 索引越界错误
+    set {_text} to "test"
+    set {_char} to character at 999 in {_text}
+
+# function triggerNoSuchElementException():
+#     # 没有此元素错误
+#     set {_array::*} to (effectively empty list)
+#     set {_first} to {_array::1}
+
+function triggerUnsupportedOperationException():
+    # 不支持的操作错误
+    set {_array::1} to "item"
+    set {_array::*} to {_array::*} where [input = "test"]
+    add "new" to {_array::*}
+
+function triggerNumberFormatException():
+    # 数字格式错误
+    set {_number} to "not a number" parsed as number
+
+function triggerClassNotFoundException():
+    # 类未找到错误
+    execute console command "/loadclass com.nonexistent.Class"
+
+# function triggerIOException():
+#     # IO异常
+#     create file "////:/invalid/path/test.txt"
+#     write "test" to file "////:/invalid/path/test.txt"
+
+# function triggerFileNotFoundException():
+#     # 文件未找到异常
+#     read file "////:/nonexistent/file.txt"
+
+function triggerTimeoutException():
+    # 超时异常
+    set {_startTime} to now
+    set {_unhuh} to true
+    while {_unhuh} is true:
+        if difference between {_startTime} and now is more than 30 seconds:
+            stop
+        wait 1 tick
+
+function triggerInterruptedException():
+    # 中断异常
+    execute console command "/stop"
+    wait 10 seconds
+
+on tab complete of "/werzcritical":
+    set tab completions for position 1 to "StackOverflowError", "OutOfMemoryError", "NullPointerException", "ArrayIndexOutOfBoundsException", "ArithmeticException", "ClassCastException", "ConcurrentModificationException", "IllegalArgumentException", "IllegalStateException", "IndexOutOfBoundsException", "NoSuchElementException", "UnsupportedOperationException", "NumberFormatException", "ClassNotFoundException", "IOException", "FileNotFoundException", "TimeoutException", "InterruptedException"

@@ -1,0 +1,12 @@
+on tab complete of "/make":
+    set tab completions for position 1 to all players
+    
+command /make <text>:
+    trigger:
+        set {_args} to parseArgument(arg-1)
+        set {_make_player} to {_args}[0]
+
+        send "%{_args}%" to sender
+
+        loop {_args::*}:
+            send "%loop-value%" to sender

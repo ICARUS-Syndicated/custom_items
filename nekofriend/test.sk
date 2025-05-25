@@ -1,0 +1,9 @@
+command /letssex <number> <number>:
+    trigger:
+        set {_time} to arg-1
+        set {_interval} to arg-2
+        loop {_time} times:
+            playSexSound(sender)
+            send "%loop-value%/%{_time}% %{_interval}%s"
+            wait for "%{_interval}% seconds" parsed as timespan
+        send "艹完了"

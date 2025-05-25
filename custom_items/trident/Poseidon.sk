@@ -1,0 +1,11 @@
+on load:
+  set {_psd} to trident named "&3Poseidon" with lore "&bking of the sea" with nbt from "{CustomItem:Poseidon,Damage:24}"
+  enchant {_psd} with loyalty 1
+  register shaped recipe:
+    id: "custom:Poseidon"
+    result: {_psd}
+    shape: "a", "b", "c"
+    ingredients:
+      set ingredient of "a" to heart of the sea
+      set ingredient of "b" to trident
+      set ingredient of "c" to tide armor trim smithing template

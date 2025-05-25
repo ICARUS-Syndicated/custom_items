@@ -1,0 +1,59 @@
+on damage:
+    if victim is a player:
+        if event-damage cause is lightning:
+            if all:
+                nbt of victim's helmet has tag "CustomItem"
+                nbt of victim's chestplate has tag "CustomItem"
+                nbt of victim's leggings has tag "CustomItem"
+                nbt of victim's boots has tag "CustomItem"
+                string tag "CustomItem" of nbt of victim's helmet is "LightningHelmet"
+                string tag "CustomItem" of nbt of victim's chestplate is "LightningChestplate"
+                string tag "CustomItem" of nbt of victim's leggings is "LightningLeggings"
+                string tag "CustomItem" of nbt of victim's boots is "LightningBoots"
+            then:
+                cancel event
+                if {lightning::%victim%.ArmorCooldown} is not set:
+                    set {lightning::%victim%.ArmorCooldown} to 1
+                    if {lightning::%victim%.killcount} is not set:   #说不定会有神人用引雷三叉戟丢自己 这边联动鸣雷剑
+                        send "那看起来很痛！" to victim
+                    else if {lightning::%victim%.killcount} < 3:
+                        remove strength from the victim
+                        remove speed from the victim
+                        apply strength potion of tier 3 without any particles to victim for 600 ticks
+                        apply speed potion of tier 2 without any particles to victim for 600 ticks
+                    else if {lightning::%victim%.killcount} < 7:
+                        remove strength from the victim
+                        remove speed from the victim
+                        remove night vision from the victim
+                        apply strength potion of tier 3 without any particles to victim for 600 ticks
+                        apply speed potion of tier 3 without any particles to victim for 600 ticks
+                        apply night vision potion of tier 1 without any particles to victim for 600 ticks
+                        heal victim by 1 heart
+                    else if {lightning::%victim%.killcount} < 12:
+                        remove strength from the victim
+                        remove speed from the victim
+                        remove night vision from the victim
+                        remove resistance from the victim
+                        apply strength potion of tier 4 without any particles to victim for 600 ticks
+                        apply speed potion of tier 4 without any particles to victim for 600 ticks
+                        apply night vision potion of tier 1 without any particles to victim for 600 ticks
+                        apply resistance potion of tier 1 without any particles to victim for 600 ticks
+                        heal victim by 2 heart
+                    else:
+                        remove strength from the victim
+                        remove speed from the victim
+                        remove night vision from the victim
+                        remove resistance from the victim
+                        apply strength potion of tier 5 without any particles to victim for 600 ticks
+                        apply speed potion of tier 5 without any particles to victim for 600 ticks
+                        apply night vision potion of tier 1 without any particles to victim for 600 ticks
+                        apply resistance potion of tier 2 without any particles to victim for 600 ticks
+                        heal victim by 4 heart
+                    wait 10 minutes
+                    delete {lightning::%victim%.ArmorCooldown}
+
+
+                
+
+
+                        

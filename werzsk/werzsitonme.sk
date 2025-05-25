@@ -1,0 +1,22 @@
+command /sitonme [<text>] [<text>]:
+    trigger:
+        set {_arg_1} to arg-1
+        set {_arg_2} to arg-2
+        if {_arg_1} is not set:
+            {_arg_2} is not set
+            
+            send "No!" to sender
+
+        if {_arg_2} is not set:
+            set {_onbacker} to sender
+        else:
+            set {_onbacker} to {_arg_2} parsed as player
+            
+        if {_arg_1} is set:
+            # Who will back you up
+            set {_backer} to {_arg_1} parsed as player
+            make sender execute command "sit %%" 
+            
+
+on tab complete of "/sitonme":
+    set tab completions for position 1 to all players

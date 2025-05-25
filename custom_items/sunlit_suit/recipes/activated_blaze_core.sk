@@ -1,0 +1,16 @@
+on load:
+    register new furnace recipe:
+        id: "activated_blaze_core"
+        result: magma cream
+        input: magma cream
+        cooktime: 2 mc days
+        experience: 6
+
+on smelt:
+    set {_m} to slot 0 of event-block
+    if all:
+        type of {_m} is magma cream
+        nbt of {_m} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_m} is "InactiveBlazeCore"
+    then:
+        set the smelted item to magma cream named "&o活化的烈焰人核心" with lore "&7高温加热使得离体的烈焰人核心恢复了活性" with nbt from "{CustomItem:ActivatedBlazeCore}"

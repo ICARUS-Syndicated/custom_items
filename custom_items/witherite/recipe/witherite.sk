@@ -1,0 +1,25 @@
+on load:
+    set {_rwth} to charcoal named "&d凋零锭胚" with lore "&7似乎要烧一下才能用。" with nbt from "{CustomItem:WitheriteRawIngot}"
+    set {_wth} to netherite ingot named "&d凋零锭" with lore "&7散发着死亡的味道。" with nbt from "{CustomItem:WitheriteIngot}"
+
+    register shapeless recipe:
+        id: "custom:witherite_raw_ingot"
+        result: {_rwth}
+        ingredients:
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add gold ingot to ingredients
+            add gold ingot to ingredients
+            add gold ingot to ingredients
+            add gold ingot to ingredients
+            add nether star to ingredients
+            
+    register new furnace recipe:
+        id: "custom:witherite_iongot"
+        result: {_wth}
+        input: {_rwth}
+        cooktime: 2 minutes
+        experience: 20
+        category: "blocks"

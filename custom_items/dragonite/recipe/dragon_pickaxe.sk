@@ -1,0 +1,8 @@
+on load:
+    set {_pickaxe} to netherite pickaxe named "&d龙化镐" with lore "&7来自终末的破裂。" with nbt from "{CustomItem:DragonPickaxe}"
+    set {_e} to echo shard named "&e终末结晶" with lore "&7终末的能量精华" with nbt from "{CustomItem:EndEnergy}"
+    set {_d} to amethyst shard named "&e龙鳞" with lore "&7来自末地的龙鳞" with nbt from "{CustomItem:DragonScale}"
+    register new shaped recipe for {_pickaxe} using {_e},{_d},{_e},{_d},netherite pickaxe,{_d},{_e},{_d},{_e} with id "dragonite_pickaxe"
+
+
+

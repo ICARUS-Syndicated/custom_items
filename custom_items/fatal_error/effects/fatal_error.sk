@@ -1,0 +1,20 @@
+on damage:
+    if all:
+        tool of attacker is a diamond sword
+        nbt of attacker's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of attacker's tool is "FatalError"
+    then:
+        if {broken::%{_p}'s uuid%} is not set:
+            set {broken::%{_p}'s uuid%} to 0
+        add 1 to {broken::%{_p}'s uuid%}
+        if {broken::%{_p}'s uuid%} >= 7:
+            set {broken::%{_p}'s uuid%} to 0
+            damage victim by 7 with fake cause void
+            draw 2 of dust using dustOption(cyan, 10) at victim
+            draw 2 of dust using dustOption(red, 10) at victim
+            play sound "block.sculk_shrieker.shriek" with volume 5.0 with pitch 1.2 at victim
+            play sound "block.beacon.power_select" with volume 5.0 with pitch 1.4 at victim
+        set victim's invulnerability ticks to 0
+        send action bar "&c&k123123123123123123123123123123123123123123123" to victim
+        send title "&c&k123123123123123123123123123123123123123123123" with subtitle "&c&k123123123123123123123123123123123123123123123" to victim for 5 seconds
+        increase damage by {broken::%{_p}'s uuid%} * 0.5

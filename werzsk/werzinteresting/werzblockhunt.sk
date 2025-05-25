@@ -1,0 +1,180 @@
+command /blockhunt [<number>]:
+    trigger:
+        set {_arg_1} to arg-1
+        if {_arg_1} is not set:
+            if {blockhunt.state} is not set:
+                set {blockhunt.state} to true
+            else if {blockhunt.state} is true:
+                set {blockhunt.state} to false
+            else:
+                set {blockhunt.state} to true
+            broadcast "&c&l[WerzFun]&r BlockHunt状态: %{blockhunt.state}%！"
+            stop
+        set {blockhunt.velocity} to {_arg_1}
+        broadcast "&c&l[WerzFun]&r 当前 &6BlockHunt &f速度改变为: %{blockhunt.velocity}%！"
+        stop
+
+on block damage:
+    if {blockhunt.state} is true:
+        set {_target_block} to target block of player
+        set {_target_location} to location of {_target_block}
+
+        set {_target_location_up} to {_target_location}
+        add 1 to y-coordinate of {_target_location_up}
+
+        set {_target_material} to type of {_target_block}
+
+        # send "%{_target_material}%" to player
+
+        set block at {_target_block} to air
+
+        spawn undroppable falling block of {_target_material} with nbt from "{Time:1,NoGravity:1b,DropItem:0b}" at {_target_location_up}
+
+        set {_last_spawn_entity} to last spawned falling block
+        set gravity of {_last_spawn_entity} to false
+        # send "%last spawned falling block%" to player
+        
+        # 记录这个实体的ID和材质信息
+        set {floating_blocks::%{_last_spawn_entity}%::material} to {_target_material}
+        set {floating_blocks::%{_last_spawn_entity}%::hits} to 0
+        
+        set {_loop_count} to 0
+        
+        loop 9200 times:
+            add 1 to {_loop_count}
+            if {_loop_count} > 100: # 防止无限循环
+                kill {_last_spawn_entity}
+                drop {_target_material} at location of {_last_spawn_entity}
+                delete {floating_blocks::%{_last_spawn_entity}%}
+                stop
+                
+            set {_entity_loc} to location of {_last_spawn_entity}
+            
+            # 检查实体是否还存在
+            if {_last_spawn_entity} is dead:
+                set block at {_entity_loc} to air
+                drop {_target_material} at {_entity_loc}
+                delete {floating_blocks::%{_last_spawn_entity}%}
+                stop
+
+            loop all players:
+                if distance between loop-player and {_last_spawn_entity} <= 1.4:
+                    drop {_target_material} at location of {_last_spawn_entity}
+                    damage loop-player by 1000000
+                    kill {_last_spawn_entity}
+                    delete {floating_blocks::%{_last_spawn_entity}%}
+                    stop
+                
+            
+            # 初始检测：如果当前位置下方不是空气，先向上移动避免撞地
+            set {_check_ground} to {_entity_loc}
+            subtract 0.2 from y-coordinate of {_check_ground}
+            set {_ground_block} to block at {_check_ground}
+            
+            if {_ground_block} is not air:
+                # 下方有方块且非常接近，立即向上移动
+                set {_up_boost} to vector(0, 0.1, 0) # 提高向上速度
+                set velocity of {_last_spawn_entity} to {_up_boost}
+                # send actionbar "避开地面障碍: %{_ground_block}%" to player
+                wait 15 ticks
+                continue
+
+            # 获取基本移动方向
+            # set {_direction} to vector from {_last_spawn_entity} to player
+            set {_nearest_distance} to 8
+            set {_target_player} to player
+            loop all players:
+                set {_d} to distance between {_last_spawn_entity} and loop-player
+                if {_d} < {_nearest_distance}:
+                    set {_nearest_distance} to {_d}
+                    set {_target_player} to loop-player
+
+            set {_direction} to vector from {_last_spawn_entity} to {_target_player}
+
+            set {_direction} to {_direction} normalized
+            
+            # 计算下一步位置
+            set {_next_loc} to {_entity_loc}
+            add ({_direction} * 0.3) to {_next_loc}
+            
+            # 检查前方是否有障碍物
+            set {_front_block} to block at {_next_loc}
+            if {_front_block} is not air:
+                # 有障碍物，尝试向上移动
+                add 0.8 to y-coordinate of {_direction} # 提高向上避障的速度
+                set {_direction} to {_direction} normalized
+                # send actionbar "绕障碍: %{_front_block}%" to player
+            else:
+                # 检查下方是否有方块（保持一定高度）
+                set {_below_loc} to {_entity_loc}
+                subtract 1 from y-coordinate of {_below_loc}
+                set {_block_below} to block at {_below_loc}
+                
+                if {_block_below} is air:
+                    # 下方没有方块，稍微下降
+                    # subtract 0.2 from y-coordinate of {_direction}
+                else:
+                    # 下方有方块，保持当前高度或略微上升
+                    add 1 to y-coordinate of {_direction} # 提高在地面上方的高度
+                
+                set {_direction} to {_direction} normalized
+            
+            # 添加一点随机性，使运动更自然
+            add random number between -0.1 and 0.1 to x-coordinate of {_direction}
+            add random number between -0.1 and 0.1 to z-coordinate of {_direction}
+            set {_direction} to {_direction} normalized
+            
+            # 设置速度
+            set velocity of {_last_spawn_entity} to {_direction} * (0.1 * {blockhunt.velocity}) # 稍微提高整体速度
+            
+            # 获取当前攻击次数
+            set {_hits} to {floating_blocks::%{_last_spawn_entity}%::hits} ? 0
+            
+            # 显示调试信息
+            # send actionbar "方向: %{_direction}% | 攻击: %{_hits}%/5" to player
+            
+            wait 15 ticks
+
+# 左键点击检测
+on leftclick:
+    if {blockhunt.state} is true:
+        loop 80 times:
+            set {_progress} to loop-number / 80
+            set {_currentDistance} to {_progress} * {_maxDistance}
+            set {_l} to location {_currentDistance} meters in front of {_p}'s eyes
+            set {_radius} to 3.5
+
+            draw 4 of end_rod at {_l} with extra 0.05
+            draw 8 of sculk_soul at {_l} with extra 0.1
+
+            # 检测每一点周围范围内的实体
+            loop all entities in radius {_radius} of {_l}:
+                set {_entity} to loop-entities
+                send actionbar "%{_entity}%" to player
+                if {_entity} is falling block:
+                    # 更新攻击次数
+                    add 1 to {floating_blocks::%{_entity}%::hits}
+                    set {_hits} to {floating_blocks::%{_entity}%::hits}
+                    set {_material} to {floating_blocks::%{_entity}%::material}
+                    
+                    # 播放音效和粒子
+                    play sound "entity.player.attack.strong" with volume 0.5 at location of {_entity}
+                    draw 15 of dust at {_entity} with extra 2.3
+                    
+                    # 是否击杀
+                    if {_hits} >= 5:
+                        kill {_entity}
+                        drop {_material} at location of {_entity}
+                        delete {floating_blocks::%{_entity}%}
+                        play sound "entity.experience_orb.pickup" with volume 1 at location of {_entity}
+                    else:
+                        send action bar "攻击进度: %{_hits}%/5" to player
+
+on death:
+    if victim is a player:
+        loop all players:
+            if {blockhunt.state} is true:
+                attacker is falling block
+                
+                event.setDeathMessage("%victim% 居然被 %{_attacker}% 杀死了！嗯...真是令人窒息...")
+            

@@ -1,0 +1,3 @@
+on death of stray:
+    if attacker is a player:
+        drop 1 of heart of the sea named "&e破损的寒冷核心" with lore "&7拿在手上怪冻人的。" with nbt from "{CustomItem:BrokenGlacierCore}" at attacker without velocity

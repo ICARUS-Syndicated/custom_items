@@ -1,0 +1,387 @@
+options:
+    sb_world_detech: false
+
+import:
+    java.lang.StringBuilder
+    java.lang.String
+    java.lang.Boolean
+    java.util.Arrays
+    java.util.UUID
+    org.bukkit.Bukkit
+
+# 初始化
+on load:
+    set {_stringBuilder} to new StringBuilder()
+    {_stringBuilder}.append("&a/frd ctl&r帮助：%nl%")
+
+    {_stringBuilder}.append("&b/frd ctl <玩家名> move/break/place/eat/chat/attack/all <boolean> &r- %nl%")
+    {_stringBuilder}.append("控制猫娘的各种权限 %nl%")
+
+    set {BlacFriendTaskControlCommand} to {_stringBuilder}.toString()
+
+
+command /frd <text>:
+    usage: 赛博猫娘主命令
+    executable by: players and console
+
+    trigger:
+        set {_args} to parseArgument(arg-1)
+
+        if {_args}[0] = "help":
+            send "help msg"
+            stop trigger
+
+        if {_args}[0] = "bind":
+            # 绑定赛博猫娘
+            if {_args}[1] isn't set:
+                set {_stringBuilder} to new StringBuilder()
+                {_stringBuilder}.append("&a/frd bind&r帮助：%nl%")
+
+                {_stringBuilder}.append("&b/frd bind &e<player> &r- ")
+                {_stringBuilder}.append("绑定一个玩家为你的猫娘 %nl%")
+
+                send {_stringBuilder}.toString()
+                stop trigger
+
+            if {_args}[1] = sender's name:
+                send "&c你不能当自己的主人"
+                stop trigger
+
+            # 发送请求
+            # bind(sender, player({_args}[1]))
+            # 判断是否对方已经是自己猫娘：
+            if getMasterOf(player({_args}[1])) is set:
+                send "&c对方已经有主人（%getMasterOf(player({_args}[1]))%）了！"
+                stop trigger
+            #判断是否已有受邀请，如果是的话就拒绝发送请求
+            if {BlackFriendRequest::%sender's uuid%} is set:
+                send "&c你有未决邀请，暂无法向他人发送邀请！"
+                stop trigger
+            # 判断对方是否是自己的主人：
+            if getMasterOf(sender) = player({_args}[1]):
+                send "&c对方是你的主人耶？"
+                stop trigger
+            
+            if {BlackFriendRequest::%player({_args}[1])'s uuid%} is set:
+                send "&c对方有未决邀请！"
+                stop trigger
+
+            # debug("你目标猫娘的主人：%getMasterOf(player({_args}[1]))%")
+            # stop trigger
+            send "&a%sender% &r请求让你成为他的猫娘（60s后超时）" to player({_args}[1])
+            send "同意请输入&e /frd accept" to player({_args}[1])
+            send "不同意请输入&e /frd refuse" to player({_args}[1])
+            send "你向 &a%{_args}[1]% &r发送了猫娘邀请（60s后超时）"
+            send "输入 &e/frd cancel &r取消"
+            set {BlackFriendRequest::%player({_args}[1])'s uuid%} to sender's uuid
+            # 设置timer second3
+            set {BlackFriendRequestTimer::%player({_args}[1])'s uuid%} to unix timestamp of now
+            stop trigger
+
+        if {_args}[0] = "unbind":
+            # 解绑猫娘
+            if getMasterOf(offlineplayer({_args}[1])) != sender:
+                send "&c这个人不是你的猫娘"
+                stop trigger
+            unbind(sender, offlineplayer({_args}[1]))
+            send "&a解绑成功"
+            send "&a你解放了" to player({_args}[1])
+            stop trigger
+
+        if {_args}[0] = "accept":
+            # 接受绑定请求
+            if {BlackFriendRequest::%sender's uuid%} isn't set:
+                send "&c你没有未决邀请！"
+                stop trigger
+            send "&a你同意了对方的邀请"
+            send "&a%sender's name%同意了你的邀请" to Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%sender's uuid%}))            
+            bind(Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%sender's uuid%})), sender)
+            delete {BlackFriendRequest::%sender's uuid%}
+            delete {BlackFriendRequestTimer::%sender's uuid%}
+            stop trigger
+
+        if {_args}[0] = "refuse":
+            # 拒绝绑定请求
+            if {BlackFriendRequest::%sender's uuid%} isn't set:
+                send "&c你没有未决邀请！"
+                stop trigger
+            send "&c你拒绝了%{BlackFriendRequest::%sender's uuid%}%的邀请"
+            send "&c%sender's name%拒绝了你的邀请" to Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%sender's uuid%}))
+            delete {BlackFriendRequest::%sender's uuid%}
+            delete {BlackFriendRequestTimer::%sender's uuid%}
+            stop trigger
+
+
+        if {args}[0] = "offer":
+            #转让猫娘
+            if player({_args}[2]) isn't set:
+                send "&c 目标不存在或不在线"
+                stop trigger
+            
+            if getMasterOf(offlineplayer({_args}[1])) != sender:
+                send "&c对方不是你的猫娘！"
+                stop trigger
+
+            if getMasterOf(player({_args}[2])) = sender:
+                send "&c你不能把猫娘转让给他自己..."
+                stop trigger
+            if player({_args}[2]) = sender:
+                send "&c你不能把猫娘转让给你自己..."
+                stop trigger
+            send "你已将猫娘转让给 &a%{_args}[2]%"
+            send "&a%sender% 已将猫娘 &a%{_args}[1]% 转让给你" to player({_args}[2])
+            send "你的主人已将你转让给你%{_args}[2]%" to player({_args}[1])
+            unbind(sender, offlineplayer({_args}[1]))
+            bind(player({_args}[2]), offlineplayer({_args}[1]))
+            stop trigger
+
+        if {_args}[0] = "cancel":
+            # 取消发送的绑定请求
+            loop {BlackFriendRequest::*}:
+                loop-value = sender's uuid
+                set {_slave} to Bukkit.getPlayer(UUID.fromString(loop-index))
+                send "&c你取消了对%{_slave}%的邀请"
+                send "&c%sender's name%取消了对你的邀请" to {_slave}
+                delete {BlackFriendRequest::%{_slave}'s uuid%}
+                stop trigger
+            send "&c你没有邀请别人！"
+            stop trigger
+            
+        if {_args}[0] = "list":
+            # send "%getSlavesOf(offlineplayer({_args}[1]))%"
+            loop getSlavesOf(sender):
+                send "%loop-value%"
+            stop trigger
+
+        #if {_args}[0] = "task":
+        #    # 任务控制子命令
+
+            # 帮助信息
+        #    if {_args}[1] isn't set:
+        #        set {_stringBuilder} to new StringBuilder()
+        #        {_stringBuilder}.append("&a/frd task&r帮助：%nl%")
+
+        #        {_stringBuilder}.append("&b/frd task del &e<taskID> &r- ")
+        #        {_stringBuilder}.append("删除任务 %nl%")
+
+        #        {_stringBuilder}.append("&b/frd task finish &e<taskID> &r- ")
+        #        {_stringBuilder}.append("标记任务为完成 %nl%")
+
+        #        {_stringBuilder}.append("&b/frd task list &r- ")
+        #        {_stringBuilder}.append("查看现在已发布的任务 %nl%")
+
+        #        send {_stringBuilder}.toString()
+        #        stop trigger
+
+        #    if {_args}[2] = "list":
+        #        loop getTaskListOf(offlineplayer({_args}[1])):
+        #            debug("%loop-value%")
+        #        stop trigger
+        #    if {_args}[2] = "del":
+                # 删除任务
+                # TODO
+        #        stop trigger
+        #    if {_args}[2] = "publish":
+        #        if {_args}[3] isn't set:
+        #            send "&c需要任务内容！"
+        #            stop trigger
+        #        publishTask(offlineplayer({_args}[1]), {_args}[3])
+                #debug("%offlineplayer({_args}[1])%")
+        #        stop trigger
+        #    if {_args}[2] = "del":
+        #        if {_args}[3] isn't set:
+        #            send "&c需要任务ID！"
+        #            stop trigger
+        #        deleteTask(offlineplayer({_args}[1]), {_args}[3])
+        #        stop trigger
+        #    stop trigger
+
+        if {_args}[0] = "ctl":
+            # 赛博猫娘控制指令
+            # TODO
+            # 帮助信息
+            if {_args}[1] isn't set:
+                send "&c参数1缺失"
+                send {BlacFriendTaskControlCommand}
+                stop trigger
+
+            if player({_args}[1]) isn't set:
+                send "&c 玩家不存在或不在线"
+                stop trigger
+            
+            if getMasterOf(player({_args}[1])) != sender:
+                send "&c对方不是你的猫娘！"
+                stop trigger
+
+            if {_args}[2] isn't set:
+                send "&c参数2缺失"
+                send {BlacFriendTaskControlCommand}
+                stop trigger
+
+            if Arrays.asList(["move", "break", "place", "eat", "chat", "attack", "all"]).contains({_args}[2]) = false:
+                send "&c参数2错误"
+                send {BlacFriendTaskControlCommand}
+                stop trigger
+            
+            if {_args}[3] isn't "true" or "false":
+                send "&c参数3错误或缺失"
+                send {BlacFriendTaskControlCommand}
+                stop trigger
+
+            if {_args}[2] != "all":
+                debug("%player({_args}[1])'s uuid% | %{_args}[2]% | %Boolean.valueOf({_args}[3])%")
+                debug("%{BlackFriendAction::%player({_args}[1])'s uuid%::%{_args}[2]%}%")
+                debug("%{BlackFriendAction::%player({_args}[1])'s uuid%::move}%")
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::%{_args}[2]%} to Boolean.valueOf({_args}[3])
+                send "&a已将 &b%{_args}[1]% &a的 &e%{_args}[2]% 权限&a设为 &b%{_args}[3]%"
+                send "&a主人已将你的 &b%{_args}[2]% &a设为了 &b%{_args}[3]%" to player({_args}[1])
+            else:
+                send "&a已将 &b%{_args}[1]% &a的&e所有权限&a设为 &b%{_args}[3]%"
+                send "&a主人已将你的&e所有权限&a设为了 &b%{_args}[3]%" to player({_args}[1])
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::move} to Boolean.valueOf({_args}[3])
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::break} to Boolean.valueOf({_args}[3])
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::place} to Boolean.valueOf({_args}[3])
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::eat} to Boolean.valueOf({_args}[3])
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::chat} to Boolean.valueOf({_args}[3])
+                set {BlackFriendAction::%player({_args}[1])'s uuid%::attack} to Boolean.valueOf({_args}[3])
+            stop trigger
+
+        if {_args}[0] = "admin":
+
+            if sender don't have permission "frd.admin":
+                send "&c你没有使用此命令的权限"
+                stop trigger
+
+            if {_args}[1] isn't set:
+                send "&cE"
+                stop trigger
+
+            if {_args}[1] = "getlist":
+                send "猫娘列表："
+                loop getSlavesOf(offlineplayer({_args}[2])):
+                    send "%loop-value%"
+                stop trigger
+            if {_args}[1] = "unbind":
+                send "强制解绑%{_args}[2]%的猫娘%{_args}[3]%"
+                unbind(offlineplayer({_args}[2]), offlineplayer({_args}[3]))
+                send "你的猫娘%{_args}[3]%已被管理员强制解绑" to player({_args}[2])
+                send "你已被管理员从%{_args}[2]%强制解绑" to player({_args}[3])
+                stop trigger
+            if {_args}[1] = "bind":
+                send "强制绑定%{_args}[3]%作为%{_args}[2]%的猫娘"
+                bind(player({_args}[2]), offlineplayer({_args}[3]))
+                send "%{_args}[3]%已被管理员强制绑定为你的猫娘" to player({_args}[2])
+                send "你已被管理员强制绑定为%{_args}[2]%的猫娘" to player({_args}[3])
+                stop trigger
+            stop trigger
+
+        if {_args}[0] = "tp":
+            if {_args}[1] isn't set:
+                send "&c你要tp到哪个猫娘？"
+                stop trigger
+            if getMasterOf(player({_args}[1])) != sender:
+                send "&c这个人不是你的猫娘！"
+                stop trigger
+            teleport sender to player({_args}[1])
+            stop trigger
+
+        if {_args}[0] = "tphere":
+            if {_args}[1] isn't set:
+                send "&c你要把哪个猫娘tp到自己？"
+                stop trigger
+            if getMasterOf(player({_args}[1])) != sender:
+                send "&c这个人不是你的猫娘！"
+                stop trigger
+            teleport player({_args}[1]) to sender
+            stop trigger
+        
+        if {_args}[0] = "debugMode":
+            if {_args}[1] isn't set:
+                send "&c你是打开还是关闭调试模式？"
+                stop trigger
+            if {_args}[1] != "true":
+                {_args}[1] != "false"
+                send "&c错误！必须为布尔值"
+                stop trigger
+            execute command "lp user %sender's name% permission set frd.debug %{_args}[1]%"
+            debug("%sender's name% 的 frd debugMode 已被设为 &a%{_args}[1]%")
+            stop trigger
+        
+        if {_args}[0] = "invsee":
+            if {_args}[1] isn't set:
+                send "&c你要打开哪个猫娘的背包？"
+                stop trigger
+            if getMasterOf(player({_args}[1])) != sender:
+                send "&c这个人不是你的猫娘！"
+                stop trigger
+
+            if player({args}[1]) is in world("world"):
+                {@sb_world_detech} = true
+                send "&c猫娘所在世界禁用了Invsee"
+                stop trigger
+            if player({args}[1]) is in world("huodong"):
+                {@sb_world_detech} = true
+                send "&c猫娘所在世界禁用了Invsee"
+                stop trigger
+
+            open player({_args}[1])'s inventory for sender
+            stop trigger
+
+        if {_args}[0] = "getXp":
+            if {_args}[1] isn't set:
+                send "&c你要抢走哪个猫娘的经验？"
+                stop trigger
+            if getMasterOf(player({_args}[1])) != sender:
+                send "&c这个人不是你的猫娘！"
+                stop trigger
+            if player({_args}[1]) isn't online:
+                send "&c这个猫娘不在线！"
+                stop trigger
+            send "&a你抢走了你猫娘所有的经验（%player({_args}[1])'s experience%）!" to sender
+            add player({_args}[1])'s experience to total experience of sender
+            set player({_args}[1])'s experience to 0
+            send "&c你所有的经验都被你的主人抢走了！" to player({_args}[1])
+            stop trigger
+        send "&c命令未找到"
+
+# 命令补全
+on tab complete of "/frd":
+    # 主命令补全
+    set tab completions for position 1 to "admin", "tp", "tphere", "help", "bind", "unbind", "offer", "accept", "cancel", "refuse", "task", "ctl", "invsee", "getXp", "list", "debugMode"
+    # 子命令补全
+    if (tab arg-1) = "admin":
+        set tab completions for position 2 to "getlist", "bind", "unbind", "getowner"
+        if (tab arg-2) = "getlist":
+            set tab completions for position 3 to all players
+        if (tab arg-2) = "unbind":
+            set tab completions for position 3 to all players
+            set tab completions for position 4 to all players
+        if (tab arg-2) = "bind":
+            set tab completions for position 3 to all players
+            set tab completions for position 4 to all players
+    if (tab arg-1) = "bind":
+        set tab completions for position 2 to all players
+    if (tab arg-1) = "unbind":
+        set tab completions for position 2 to getSlavesOf(player)
+    #if (tab arg-1) = "task":
+    #    set tab completions for position 2 to getSlavesOf(player)
+    #    set tab completions for position 3 to "del", "finish", "publish" and "list"
+    #    if (tab arg-3) = "del":
+    #        set tab completions for position 4 to getTaskListOf(offlineplayer(tab arg-2))
+    if (tab arg-1) = "offer":
+        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 3 to all players
+    if (tab arg-1) = "ctl":
+        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 3 to "move", "break", "place", "eat", "chat", "attack" and "all"
+        set tab completions for position 4 to "true", and "false"
+    if (tab arg-1) = "invsee":
+        set tab completions for position 2 to getSlavesOf(player)
+    if (tab arg-1) = "getXp":
+        set tab completions for position 2 to getSlavesOf(player)
+    if (tab arg-1) = "tp":
+        set tab completions for position 2 to getSlavesOf(player)
+    if (tab arg-1) = "tphere":
+        set tab completions for position 2 to getSlavesOf(player)
+    if (tab arg-1) = "debugMode":
+        set tab completions for position 2 to "true" and "false"

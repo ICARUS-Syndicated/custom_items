@@ -1,0 +1,78 @@
+command /effect:sculkbust <player>:
+    usage: 让玩家射出音波尖啸
+    executable by: console
+    trigger:
+        sculkbust(arg-1)
+
+function sculkbust(p:player) :: boolean:
+    # 准备音效
+    play sound "entity.warden.sonic_charge" with volume 1 at {_p}
+    
+    # 创建更短的充能动画效果
+    set {_chargeTime} to 0
+    while {_chargeTime} < 5:
+        add 1 to {_chargeTime}
+        # 充能期间的粒子效果
+        draw 15 of soul at {_p} with extra 0.3
+        draw 8 of sculk_charge at {_p} with extra 0.3
+        wait 1 tick
+    
+    # 发射音波音效
+    play sound "entity.warden.sonic_boom" with volume 1.0 at {_p}
+    
+    # 创建瞬时激光效果
+    set {_maxDistance} to 30
+    set {_loc} to {_p}'s eyes location
+    
+    # Curses
+    if "%{_curses}%" contains "curse:witherite":
+        make {_p} shoot wither skull with speed 12
+
+    # 使用循环快速绘制整条激光路径
+    loop 80 times:
+        set {_progress} to loop-number / 80
+        set {_currentDistance} to {_progress} * {_maxDistance}
+        set {_l} to location {_currentDistance} meters in front of {_p}'s eyes
+        
+        # 使用更密集的粒子效果模拟激光
+        draw 8 of sculk_soul at {_l} with extra 0.1
+        draw 6 of sonic_boom at {_l} with extra 0.1
+        draw 4 of end_rod at {_l} with extra 0.05
+        
+        set {_radius} to 3.5
+
+        # 检测每一点周围范围内的实体
+        loop all entities in radius {_radius} of {_l}:
+            set {_entity} to loop-entities
+            # 确保不是玩家自己且尚未被命中
+            if type of {_entity} is not a player:
+                # if {_hit::%{_entity}'s uuid%} is not set:
+                #     set {_hit::%{_entity}'s uuid%} to true
+                    
+                # 伤害实体
+                damage {_entity} by 12
+                
+                # 强力击退效果
+                # push {_entity} upwards at speed 0.8
+                # push {_entity} (direction from {_entity} to {_p}) at speed -2.5
+                
+                # 命中特效
+                play sound "entity.warden.attack_impact" with volume 0.6 at {_entity}
+                draw 25 of sculk_soul at {_entity} with extra 0.4
+                draw 15 of explosion at {_entity} with extra 0.3
+                
+                # 增强负面效果
+                apply glowing 1 to {_entity} for 10 seconds
+                apply darkness 2 to {_entity} for 7 seconds
+                apply slowness 2 to {_entity} for 5 seconds
+                apply wither 1 to {_entity} for 3 seconds
+                
+        
+        # 每点之间短暂等待，使激光更连贯
+        # wait 1 tick
+    
+    # 清除命中标记
+    # delete {_hit::*}
+    
+    # 攻击结束音效
+    play sound "entity.warden.tendril_clicks" with volume 0.5 at {_p}

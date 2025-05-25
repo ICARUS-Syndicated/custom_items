@@ -1,0 +1,20 @@
+on right click with netherite sword:
+    if nbt of player's tool has tag "CustomItem":
+        set {_ItemName} to string tag "CustomItem" of nbt of player's tool
+        if {_ItemName} is "DragonBlade":
+            if {dragon_blade.cooldown.%player%} is not set:
+                # Teleportation ability
+                if player is not sneaking:
+                    teleport player to targeted block
+                else:
+                    shoot dragon fireball with speed 8
+                wait 0.3 second
+
+                # Blindness effect
+                apply blindness to targeted player for 5 seconds
+                play sound "entity.ender_dragon.growl" at player
+
+                 # Particle effect
+                make 30 of dragon breath particle at location of player
+                wait 1 seconds
+                delete {dragon_blade.cooldown.%player%}

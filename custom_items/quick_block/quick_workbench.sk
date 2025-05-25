@@ -1,0 +1,10 @@
+on load:
+  set {_qw} to leather named "&f随身工作台" with lore "&o&7右键以打开工作台" with nbt from "{CustomModelData:2,CustomItem:Quickwb,Enchantments:[{id:'minecraft:unbreaking',lvl:1}],HideFlags:63}"
+  set {_c} to crafting table
+  set {_l} to leather
+  register new shaped recipe for {_qw} using {_l},{_l},{_l},{_l},{_c},{_l},{_l},{_l},{_l} with id "minecraft:quick_workbench"
+
+on right click with leather:
+  if nbt of player's tool has tag "CustomItem":
+    string tag "CustomItem" of nbt of player's tool is "Quickwb"
+    make player execute command "/workbench"

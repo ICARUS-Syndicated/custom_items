@@ -1,0 +1,48 @@
+on load:
+    set {_fullglaciercore} to heart of the sea with name "&e冰川核心" with lore "&7冰川的力量。" with nbt from "{CustomItem:GlacierCore}"
+    set {_colddiamond} to diamond with name "&e冰霜钻石" with lore "&7像一大块冰" with nbt from "{CustomItem:GlacierDiamond}"
+    set {_helmet} to diamond helmet named "&e冰川头盔" with lore "&7寒冷让你充满力量" with nbt from "{CustomItem:GlacierHelmet}" 
+    enchant {_helmet} with unbreaking 6
+    set armor trim of {_helmet} to armor trim from netherite_material and dune_pattern
+    set {_chestplate} to diamond chestplate named "&e霜冻胸甲" with lore "&7寒冷让你势不可当" with nbt from "{CustomItem:GlacierChestplate}"
+    enchant {_chestplate} with unbreaking 6
+    set armor trim of {_chestplate} to armor trim from netherite_material and rib_pattern
+    set {_leggings} to diamond leggings named "&e凝冰护腿" with lore "&7寒冷让你坚不可摧" with nbt from "{CustomItem:GlacierLeggings}"
+    enchant {_leggings} with unbreaking 6
+    set armor trim of {_leggings} to armor trim from netherite_material and dune_pattern
+    set {_boots} to diamond boots named "&e霜雪长靴" with lore "&7寒冷让你悄无声息" with nbt from "{CustomItem:GlacierBoots}"
+    enchant {_boots} with unbreaking 6
+    enchant {_boots} with frost walker 4
+    set armor trim of {_boots} to armor trim from netherite_material and dune_pattern
+
+    register new shaped recipe:
+        id: "custom:glacier_chestplate"
+        result: {_chestplate}
+        shape: "b b","bab","bbb"
+        ingredients:
+            set ingredient of "a" to {_fullglaciercore}
+            set ingredient of "b" to {_colddiamond}
+    
+    register new shaped recipe:
+        id: "custom:glacier_helmet"
+        result: {_helmet}
+        shape: "bbb","a a","   "
+        ingredients:
+            set ingredient of "a" to {_fullglaciercore}
+            set ingredient of "b" to {_colddiamond}
+    
+    register new shaped recipe:
+        id: "custom:glacier_leggings"
+        result: {_leggings}
+        shape: "bab","b b","b b"
+        ingredients:
+            set ingredient of "a" to {_fullglaciercore}
+            set ingredient of "b" to {_colddiamond}
+    
+    register new shaped recipe:
+        id: "custom:glacier_boots"
+        result: {_boots}
+        shape: "   ","a a","b b"
+        ingredients:
+            set ingredient of "a" to {_fullglaciercore}
+            set ingredient of "b" to {_colddiamond}

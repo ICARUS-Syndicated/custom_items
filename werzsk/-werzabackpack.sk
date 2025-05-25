@@ -1,0 +1,263 @@
+options:
+    prefix: &8[&6WerzABP&8]
+    dataFolder: plugins/WerzBackpack/playersdata # JSON 数据文件夹
+
+command /bp [<integer=1>]:
+    description: "Better Best Backpack by WerewolfwolfyXD"
+    usage: /bp [backpack number]
+    executable by: players
+    trigger:
+        # 获取背包ID 从 arg 1
+        set {_backpackNumber} to arg-1
+        
+        # 无效的背包Number
+        if {_backpackNumber} < 1:
+            send "{@prefix} &c背包ID必须大于1！"
+            stop
+            
+        # 如果玩家有无已注册背包
+        if {backpack.%player's uuid%.%{_backpackNumber}%} is not set:
+            # 创建新的背包
+            set {backpack.%player's uuid%.%{_backpackNumber}%} to chest inventory with 64 rows named "&6背包 &l#%{_backpackNumber}%"
+            send "{@prefix} &a已经成功创建背包 (#%{_backpackNumber}%)!"
+        
+        # 打开背包
+        open {backpack.%player's uuid%.%{_backpackNumber}%} to player
+        # send "{@prefix} &7背包 #%{_backpackNumber}% 已打开"
+
+# 被包管理器
+command /bpm [<text>] [<integer>] [<integer>]:
+    description: Manage your backpacks
+    usage: /bpm [create|delete|list] [backpack number]
+    executable by: players
+    trigger:
+        set {_action} to arg-1
+        set {_backpackNumber} to arg-2
+        set {_size} to arg-3
+        
+        # 列出背包
+        if {_action} is "list":
+            send "{@prefix} &6你的背包:"
+            set {_count} to 0
+            loop {backpack.%player's uuid%::*}:
+                add 1 to {_count}
+                send "{@prefix} &7- 背包 #%loop-index% &8(&7ID: %loop-index%&8)"
+            
+            if {_count} is 0:
+                send "{@prefix} &c你没有可用背包!"
+            stop
+        
+        # 检查ID是否存在背包
+        if {_backpackNumber} is not set:
+            if {_action} is "create" or "delete":
+                send "{@prefix} &c你这个背包ID没有绑定任何背包!"
+                stop
+        
+        
+        # 创建指定背包
+        if {_action} is "create" or "c":
+            if {_backpackNumber} < 1:
+                send "{@prefix} &c背包ID必须大于1！"
+                stop
+                
+            if {backpack.%player's uuid%.%{_backpackNumber}%} is set:
+                send "{@prefix} &c你已经有这个ID的背包了！"
+                stop
+
+            if {_size} is not set:    
+                set {_size} to 64
+            
+            set {backpack.%player's uuid%.%{_backpackNumber}%} to chest inventory with {_size} rows named "&6背包 #%{_backpackNumber}%"
+            send "{@prefix} &a已创建新背包 (#%{_backpackNumber}%):大小：%{_size}%!"
+            stop
+            
+        # 删除指定背包
+        if {_action} is "delete" or "del" or "d":
+            if {_backpackNumber} < 1:
+                send "{@prefix} &c背包ID必须大于1！"
+                stop
+                
+            if {backpack.%player's uuid%.%{_backpackNumber}%} is not set:
+                send "{@prefix} &c你这个背包ID没有绑定任何背包!"
+                stop
+                
+            delete {backpack.%player's uuid%.%{_backpackNumber}%}
+            send "{@prefix} &a已删除背包 #%{_backpackNumber}%!"
+            stop
+
+
+        # 存入箱子
+        if {_action} is "transfer" or "put":
+            if {_backpackNumber} < 1:
+                send "{@prefix} &c背包ID必须大于1！"
+                stop
+                
+            if {backpack.%player's uuid%.%{_backpackNumber}%} is not set:
+                send "{@prefix} &c你这个背包ID没有绑定任何背包!"
+                stop
+
+            set {_target} to target block of player
+
+            # 检查 target 是不是容器
+            if {_target} is chest or barrel or trapped chest or shulker box:
+                # 获取背包库存
+                set {_backpackInv} to {backpack.%player's uuid%.%{_backpackNumber}%}
+                set {_containerInv} to inventory of {_target}
+
+                # 转移物品计数器
+                set {_itemCount} to 0
+
+                # 开始转移
+                loop all items in {_backpackInv}:
+                    if {_containerInv} can hold loop-item:
+                        # 计数器 +1
+                        add 1 to {_itemCount}
+                        # 添加到箱子；并且从背包中清除
+                        add loop-item to {_containerInv}
+                        remove loop-item from {_backpackInv}
+                    else:
+                        send "{@prefix} &c容器大小不足，停止传输！&a已成功将 %{_itemCount}% 格物品从背包 #%{_backpackNumber}% 转移到容器中!"
+                        stop
+                if {_itemCount} is 0:
+                    send "{@prefix} &e背包是空的，没有物品转移哦"
+                else:
+                    send "{@prefix} &a已成功将 %{_itemCount}% 格物品从背包 #%{_backpackNumber}% 转移到容器中!"
+            else:
+                send "{@prefix} &c你需要对着一个容器 (箱子、桶等) 使用此命令!"
+            stop
+
+        # 从容器存储物品到背包
+        if {_action} is "storage" or "get":
+            if {_backpackNumber} is not set:
+                send "{@prefix} &c请指定背包ID!"
+                stop
+                
+            if {_backpackNumber} < 1:
+                send "{@prefix} &c背包ID必须大于1！"
+                stop
+                
+            if {backpack.%player's uuid%.%{_backpackNumber}%} is not set:
+                # 创建新的背包
+                set {backpack.%player's uuid%.%{_backpackNumber}%} to chest inventory with 6 rows named "&6背包 &l#%{_backpackNumber}%"
+                send "{@prefix} &a已经成功创建背包 (#%{_backpackNumber}%)!"
+            
+            # 获取玩家正在看的方块
+            set {_target} to target block of player
+            
+            # 检查方块是否为容器
+            if {_target} is chest or barrel or trapped chest or shulker box:
+                # 获取背包和容器的库存
+                set {_backpackInv} to {backpack.%player's uuid%.%{_backpackNumber}%}
+                set {_containerInv} to inventory of {_target}
+                
+                # 计数转移的物品
+                set {_itemCount} to 0
+                
+                # 从容器转移物品到背包
+                loop all items in {_containerInv}:
+                    if {_backpackInv} can hold loop-item:
+                        add 1 to {_itemCount}
+                        add loop-item to {_backpackInv}
+                        remove loop-item from {_containerInv}
+                    else:
+                        send "{@prefix} &c背包大小不足，停止传输！&a已成功将 %{_itemCount}% 格物品从容器转移到背包 #%{_backpackNumber}% 中!"
+                        stop
+
+                if {_itemCount} is 0:
+                    send "{@prefix} &e容器是空的，没有物品可以转移。"
+                else:
+                    send "{@prefix} &a已成功将 %{_itemCount}% 个物品从容器转移到背包 #%{_backpackNumber}%!"
+            else:
+                send "{@prefix} &c你需要对着一个容器 (箱子、桶等) 使用此命令!"
+            stop
+
+        if {_action} is "unpacker":
+            if {_backpackNumber} is not set:
+                send "{@prefix} &c请指定背包ID!"
+                stop
+                
+            if {_backpackNumber} < 1:
+                send "{@prefix} &c背包ID必须大于1！"
+                stop
+
+            # 检查背包是否存在
+            if {backpack.%player's uuid%.%{_backpackNumber}%} is not set:
+                send "{@prefix} &c你这个背包ID没有绑定任何背包!"
+                stop
+                
+            # 获取背包物品
+            set {_backpackInv} to {backpack.%player's uuid%.%{_backpackNumber}%}
+            
+            # 计数器
+            set {_itemCount} to 0
+            
+            # 开始丢出
+            loop all items in {_backpackInv}:
+                add 1 to {_itemCount}
+                drop loop-item at player's location
+                remove loop-item from {_backpackInv}
+            
+            # 背包删除
+            delete {backpack.%player's uuid%.%{_backpackNumber}%}
+
+            # 总结
+            if {_itemCount} is 0:
+                send "{@prefix} &e背包是空的，没有物品可以丢出来。"
+            else:
+                send "{@prefix} &a已成功将背包 #%{_backpackNumber}% 中的 %{_itemCount}% 格物品丢出来!并且删除背包"
+
+        if {_action} is "drop":
+            if {_backpackNumber} is not set:
+                send "{@prefix} &c请指定背包ID!"
+                stop
+                
+            if {_backpackNumber} < 1:
+                send "{@prefix} &c背包ID必须大于1！"
+                stop
+
+            # 检查背包是否存在
+            if {backpack.%player's uuid%.%{_backpackNumber}%} is not set:
+                send "{@prefix} &c你这个背包ID没有绑定任何背包!"
+                stop
+                
+            # 获取背包物品
+            set {_backpackInv} to {backpack.%player's uuid%.%{_backpackNumber}%}
+            
+            # 计数器
+            set {_itemCount} to 0
+            
+            # 开始丢出
+            loop all items in {_backpackInv}:
+                add 1 to {_itemCount}
+                drop loop-item at player's location
+                remove loop-item from {_backpackInv}
+
+            # 总结
+            if {_itemCount} is 0:
+                send "{@prefix} &e背包是空的，没有物品可以丢出来。"
+            else:
+                send "{@prefix} &a已成功将背包 #%{_backpackNumber}% 中的 %{_itemCount}% 格物品丢出来!并且删除背包"
+            stop
+        
+        
+        if {_action} is "save":
+            send "正在保存背包" to sender
+            stop
+
+        # 无效指令
+        if {_action} is not set:
+            send "{@prefix} &c用法: /bpm [create|delete|list] [backpack number]"
+            stop
+
+        else:
+            send "{@prefix} &c无效命令...检查一下呗" to sender
+            stop
+
+# 服务器关闭时：保存背包数据
+on unload:
+    save {backpack::*}
+
+# 玩家离开游戏时：保存背包数据
+on quit:
+    send "{@prefix} 正在保存你的背包数据"
+    save {backpack.%player's uuid%::*}

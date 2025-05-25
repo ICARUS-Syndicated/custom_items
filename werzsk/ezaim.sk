@@ -1,0 +1,102 @@
+# Aimbot.sk
+# 通过命令锁定目标玩家，投掷物会在飞行一段时间后击中目标
+
+# 变量定义
+variables:
+    {aimbot::%player%} = "none" # 存储每个玩家的锁定目标
+
+# 主命令
+command /aimbot [<player>]:
+    permission: aimbot.use
+    permission message: &c你没有使用自动瞄准的权限!
+    usage: &c用法: /aimbot [玩家名称] 或 /aimbot (取消锁定)
+    trigger:
+        # 如果没有指定目标玩家，则取消当前锁定
+        if arg-1 is not set:
+            if {aimbot::%player%} is "none":
+                send "&c你当前没有锁定任何目标。"
+            else:
+                set {_target} to {aimbot::%player%}
+                set {aimbot::%player%} to "none"
+                send "&a已取消对 &e%{_target}%&a 的锁定。"
+        # 如果指定了目标玩家
+        else:
+            # 检查目标是否为自己
+            if arg-1 is player:
+                send "&c你不能锁定自己!"
+                stop
+            
+            # 检查目标是否在线
+            if arg-1 is online:
+                # 如果已经锁定了该目标，则取消锁定
+                if {aimbot::%player%} is "%arg-1%":
+                    set {aimbot::%player%} to "none"
+                    send "&a已取消对 &e%arg-1%&a 的锁定。"
+                # 否则，锁定新目标
+                else:
+                    set {aimbot::%player%} to "%arg-1%"
+                    send "&a已锁定目标: &e%arg-1%&a! 使用任何投掷物将会瞄准该玩家。"
+                    send "&a再次输入 &e/aimbot&a 或 &e/aimbot %arg-1%&a 取消锁定。"
+            else:
+                send "&c目标玩家不在线!"
+
+# 监听投掷物发射事件
+on shoot:
+    if shooter is a player:
+        set {_shooter} to shooter
+        # 检查是否有锁定的目标
+        if {aimbot::%{_shooter}%} is not "none":
+            set {_target} to {aimbot::%{_shooter}%} parsed as player
+            # 确保目标依然在线
+            if {_target} is online:
+                # 保存原始投掷物
+                set {_projectile} to projectile
+                set {_projectile_type} to type of projectile
+                
+                # 让投掷物飞一小段时间
+                wait 0.3 seconds
+                
+                # 开始跟踪循环，持续调整方向直到命中或超时
+                set {_attempts} to 0
+                while {_projectile} is alive:
+                    # 限制最大跟踪时间（防止永久循环）
+                    add 1 to {_attempts}
+                    if {_attempts} > 30:
+                        stop
+                    
+                    # 目标可能移动，所以不断更新方向
+                    if {_target} is online:
+                        # 获取目标位置（稍微瞄准头部以提高命中率）
+                        set {_target_loc} to location of {_target}
+                        set y-coordinate of {_target_loc} to (y-coordinate of {_target_loc}) + 1.5
+                        
+                        # 计算更精确的方向向量
+                        set {_direction} to vector from location of {_projectile} to {_target_loc}
+                        
+                        # 根据距离动态调整速度
+                        set {_distance} to distance between {_projectile} and {_target}
+                        set {_speed} to 2.0
+                        if {_distance} < 10:
+                            set {_speed} to 2.5
+                        if {_distance} < 5:
+                            set {_speed} to 3.0
+                            
+                        # 设置投掷物的新速度向量
+                        set velocity of {_projectile} to {_direction} normalized * {_speed}
+                        
+                        # 预测移动时添加一点提前量
+                        set {_target_vel} to velocity of {_target}
+                        if vector length of {_target_vel} > 0.1:
+                            set velocity of {_projectile} to (velocity of {_projectile}) + ({_target_vel} * 0.2)
+                    else:
+                        # 如果目标离线，停止跟踪
+                        stop
+                    
+                    # 短暂等待后再次更新（提高精度但不影响性能）
+                    wait 2 ticks
+                
+                # 如果到这里，投掷物已经消失（可能击中了什么）
+
+# 玩家退出游戏时清理数据
+on quit:
+    set {aimbot::%player%} to "none"

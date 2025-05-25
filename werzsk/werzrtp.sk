@@ -1,0 +1,82 @@
+options:
+    # 配置参数
+    prefix: &7[&6WerzRTP&7]
+    min-x: -10000 # 最小X坐标范围
+    max-x: 10000  # 最大X坐标范围
+    min-z: -10000 # 最小Z坐标范围
+    max-z: 10000 # 最大Z坐标范围
+    max-attempts: 10 # 最大尝试次数
+    cooldown: 60 # 冷却时间（秒）
+
+# 生成随机坐标
+function getRandomLocation(w: world) :: location:
+    set {_x} to random integer between {@min-x} and {@max-x}
+    set {_z} to random integer between {@min-z} and {@max-z}
+    
+    # 获取该坐标最高的方块Y值
+    set {_highestBlock} to highest block at location({_x}, 0, {_z}, {_w})
+    set {_y} to y-coordinate of {_highestBlock} + 1
+    
+    return location({_x}, {_y}, {_z}, {_w})
+
+# 检查位置是否安全
+function isSafe(l: location) :: boolean:
+    # 获取世界和坐标
+    set {_world} to world of {_l}
+    set {_x} to x-coordinate of {_l}
+    set {_y} to y-coordinate of {_l}
+    set {_z} to z-coordinate of {_l}
+    
+    # 检查脚下方块
+    set {_belowBlock} to block at location({_x}, {_y} - 1, {_z}, {_world})
+    if {_belowBlock} is air:
+        return false
+    if {_belowBlock} is lava:
+        return false
+    if {_belowBlock} is water:
+        return false
+    if {_belowBlock} is cactus:
+        return false
+    
+    # 检查玩家所处位置
+    set {_playerBlock} to block at location({_x}, {_y}, {_z}, {_world})
+    if {_playerBlock} is not air:
+        return false
+    
+    # 检查头顶位置
+    set {_aboveBlock} to block at location({_x}, {_y} + 1, {_z}, {_world})
+    if {_aboveBlock} is not air:
+        return false
+    
+    return true
+
+command /rtp:
+    aliases: /randomtp
+    trigger:
+        send "{@prefix} &e正在寻找安全的传送位置..." to player
+        
+        # 尝试查找安全位置
+        set {_attempts} to 0
+        set {_found} to false
+        
+        while {_attempts} < {@max-attempts}:
+            add 1 to {_attempts}
+            
+            # 获取随机位置
+            set {_loc} to getRandomLocation(player's world)
+            
+            # 检查位置安全性
+            if isSafe({_loc}) is true:
+                # 找到安全位置，传送玩家
+                teleport player to {_loc}
+                set {_x} to floor(x-coordinate of {_loc})
+                set {_y} to floor(y-coordinate of {_loc})
+                set {_z} to floor(z-coordinate of {_loc})
+                send "{@prefix} &a你已被传送到 &e%{_x}%&a, &e%{_y}%&a, &e%{_z}%&a！(本次尝试次数：&e%{_attempts}%&a)" to player
+                play sound "entity.enderman.teleport" with volume 1 at player for player
+                set {_found} to true
+                stop
+        
+        # 如果所有尝试都失败
+        if {_found} is false:
+            send "{@prefix} &c无法找到安全的传送位置，请稍后再试！" to player

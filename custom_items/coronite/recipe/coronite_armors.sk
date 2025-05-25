@@ -1,0 +1,12 @@
+on load:
+    set {_h} to iron helmet named "&d冕头盔" with lore "&7我发烧了？" with nbt from "{CustomItem:CoroniteHelmet}"
+    set {_ch} to iron chestplate named "&d冕胸甲" with lore "&7满腔热血！" with nbt from "{CustomItem:CoroniteChestplate}"
+    set {_l} to iron leggings named "&d冕护腿" with lore "&7积极也暖暖的" with nbt from "{CustomItem:CoroniteLeggings}"
+    set {_b} to iron boots named "&d冕头盔" with lore "&7足底加热" with nbt from "{CustomItem:CoroniteBoots}"
+    set {_c} to iron ingot named "&d冕锭" with lore "&7锟斤拷烫烫烫!" with nbt from "{CustomItem:Coronite}"
+    register new shaped recipe for {_h} using {_c},{_c},{_c},{_c},air,{_c},air,air,air with id "coronite_helmet"
+    register new shaped recipe for {_ch} using {_c},air,{_c},{_c},{_c},{_c},{_c},{_c},{_c} with id "coronite_chestplate"
+    register new shaped recipe for {_l} using {_c},{_c},{_c},{_c},air,{_c},{_c},air,{_c} with id "coronite_leggings"
+    register new shaped recipe for {_b} using air,air,air,{_c},air,{_c},{_c},air,{_c} with id "coronite_boots"
+
+

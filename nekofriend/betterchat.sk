@@ -1,0 +1,12 @@
+on chat:
+    replace "&" with "§" in the message   # 打彩字支持
+    set {_device} to placeholder "floodgate_device" from player
+    set {_player_title} to placeholder "playertitle_use" from player
+    set {_player_name} to player's name
+    if getMasterOf(player) is set:
+        set {_player_name} to "%{_player_name}  %&c猫娘&r"
+
+    set {_player_world} to placeholder "multiverse_world_alias" from player
+    set {_time} to placeholder "server_time_kk:mm:ss"
+
+    set chat format to "%{_device}%&7[%{_player_world}%&7]%{_player_title}% %{_player_name}%: &r[message]"

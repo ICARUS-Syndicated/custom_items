@@ -1,0 +1,5 @@
+on load:
+    set {_chestplate} to diamond chestplate named "&d回响胸甲" with lore "&7哇袄！" with nbt from "{CustomItem:EchoingChestplate}"
+    set {_d} to diamond named "&d深黯钻石" with lore "&7似乎能听到来自远古的回响" with nbt from "{CustomItem:SculkDiamond}"
+    set {_wc} to heart of the sea named "&d破损的坚守者核心" with lore "&7古城坚守者体内的神秘生命之源，这个已经破损了" with nbt from "{CustomItem:WardenCore}"
+    register new shaped recipe for {_chestplate} using {_d},air,{_d},{_d},{_wc},{_d},{_d},{_d},{_d} with id "EchoingChestplate"

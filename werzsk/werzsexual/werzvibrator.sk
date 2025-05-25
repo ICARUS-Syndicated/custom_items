@@ -1,0 +1,123 @@
+on load:
+    set {normal_vibrator} to lightning rod named "&f&lVibrator &a(Normal) &c(3.5cm x 1.0m)" with lore "&7Frequency!" with nbt from "{CustomItem:SexToy}"
+
+function set_struct(player: player, target: player):
+    send "Start Vibration: %{_target}% hit by %{_player}%" to {_player}
+
+    set {_x} to x-coordinate of {_target}
+    set {_y} to y-coordinate of {_target}
+    set {_z} to z-coordinate of {_target}
+    set {_w} to world of {_target}
+
+    # Obsidian
+    set block at location {_x}, {_y}-1, {_z} in {_w} to obsidian
+
+    # 活塞
+    set block at location {_x}+2, {_y}, {_z} in {_w} to sticky piston
+
+    # 末地烛
+    set block at location {_x}+1, {_y}, {_z} in {_w} to lightning rod
+
+    # 
+    set block at location {_x}+2, {_y}+1, {_z} in {_w} to observer
+    set block at location {_x}+2, {_y}+2, {_z} in {_w} to observer
+
+function bee(player: player):
+    if {werzsex.toy.freq} is not set:
+        set {werzsex.toy.freq} to 0
+    
+    add 1 to {werzsex.toy.freq}
+    
+    if {werzsex.toy.freq} >= 3:
+        set {werzsex.toy.freq} to 0
+
+    if {werzsex.toy.freq} is 1:
+        play sound "entity.bee.loop" with volume 1 at {_player}
+    else if {werzsex.toy.freq} is 2:
+        play sound "entity.bee.loop_aggressive" with volume 1 at {_player}
+    else if {werzsex.toy.freq} is 0:
+        # do nothing or stop sound
+        stop all sounds for {_player}
+
+on right click:
+    if player's tool is {normal_vibrator}:
+        type of player's target is the player
+
+        # set_struct(player, player's target)
+        bee(player)
+
+on left click:
+    if player's tool is {normal_vibrator}:
+        set {werzsex.toy.freq} to 0
+        stop all sounds for {_player}
+        send "频率已经重置到： %{werzsex.toy.freq}%" to player
+
+
+
+command /werzvibrator:
+    permission: werzutils.vibrator
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        give player {normal_vibrator}
+
+command /werzunsex:
+    trigger:
+        set {werzsex.%player's name%.enabled} to false
+
+
+command /werzsex [<string>]:
+    trigger:
+        set {_playername} to arg-1
+        
+        if {_playername} is not set:
+            send "None player selected!" to sender
+        else:
+
+            set {_bottom_player} to {_playername} parsed as player
+            set {_top_player} to sender
+
+            set {werzsex.%player's name%.enabled} to true
+            set {werzsex.%player's name%.target} to {_bottom_player}
+            set {werzsex.%player's name%.top} to {_top_player}
+            loop 500 times:
+                if {werzsex.%player's name%.enabled} is false:
+                    stop
+                
+                set {_top_player_location} to {_top_player}'s location
+                set {_top_player_front_location} to location in front of {_top_player}
+                set {_bottom_player_location} to {_bottom_player}'s location
+
+                set yaw of {_top_player_front_location} to yaw of {_top_player_location}
+                set pitch of {_top_player_front_location} to pitch of {_top_player_location}
+
+                teleport {_bottom_player} to {_top_player_front_location}
+
+                set {_bottom_player_heart} to {_bottom_player}'s location
+                add 1.5 to y-coordinate of {_bottom_player_heart}
+
+                if {_top_player} is sneaking:
+                    damage {_bottom_player} by 1
+                    # heal {_bottom_player} by 0.5 heart
+                    send actionbar "Wow %health of {_bottom_player}% / %max health of {_bottom_player}%" to {_top_player}
+                    draw 8 of heart at {_bottom_player_heart} with extra 2
+                wait 1 ticks
+            stop
+
+on death:
+    if victim is a player:
+        loop all players:
+            if {werzsex.%loop-player's name%.enabled} is true:
+                {werzsex.%loop-player's name%.target} is victim
+
+                set {_attacker} to {werzsex.%loop-player's name%.top}
+                set {werzsex.%loop-player's name%.enabled} to false
+
+                if block below victim is air:
+                    event.setDeathMessage("%victim% 被 %{_attacker}% 炒飞惹！")
+                if string tag "CustomItem" of nbt of {_attacker}'s tool is "SexToy":
+                    event.setDeathMessage("%{_attacker}% 使用小玩具对 %victim% 发起混合进攻！可惜 %victim% 战败......")
+                else:
+                    event.setDeathMessage("%victim% 体力不支 被 %{_attacker}% 炒死惹！")
+            
+on tab complete of "/werzsex":
+    set tab completions for position 1 to all players

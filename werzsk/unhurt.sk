@@ -1,0 +1,26 @@
+command /unhurt:
+  permission: werzutils.unhurt
+  permission message: &c你没有使用该命令的权限喵~
+  trigger:
+    if {unhurt::%player's name%.enable} is not set:
+      set {unhurt::%player's name%.enable} to -1
+  
+    set {unhurt::%player's name%.enable} to {unhurt::%player's name%.enable} *-1
+  
+    if {unhurt::%player's name%.enable} is 1:
+      send "&9[GI]&a鬼影迷踪步已开启，再次输入该指令以关闭" to sender
+  
+    if {unhurt::%player's name%.enable} is -1:
+      send "&9[GI]&c鬼影迷踪步已关闭，再次输入该指令以启用" to sender
+
+on damage:
+  victim is player
+  {unhurt::%victim's name%.enable} is 1
+  cancel event
+  set victim's invulnerability ticks to 4
+
+on death:
+  victim is player
+  {unhurt::%victim's name%.enable} is 1
+  cancel event
+  set victim's invulnerability ticks to 4

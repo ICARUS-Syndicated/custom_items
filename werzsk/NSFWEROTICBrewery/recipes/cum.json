@@ -1,0 +1,30 @@
+{
+    "metadata": {
+        "namespace": "erotic",
+        "display": "&a&lCum",
+        "description": "&aSimply Cum of Player",
+        "create_command": ""
+    },
+    "item": {
+        "lores": [
+            "&a极度新鲜",
+            "&a美味专享"
+        ],
+        "enchantments": ["unbreaking/1"],
+        "custom_nbt": ["{CustomItem:EroticBreweryCum}", "{HiddenFlags:63}"],
+        "potion_color": "#FFFFFF",
+        "recipe": [
+            "minecraft:rotten_flesh/1",
+            "minecraft:milk_bucket/1"
+        ]
+    },
+    "effects": {
+        "server_commands": ["fly %player%"],
+        "player_commands": ["tell good!"]
+    },
+    "triggers": {
+        "after_drink": [
+            "tellraw %player% &a&l你感觉喉咙黏糊糊的..."
+        ]
+    }
+}

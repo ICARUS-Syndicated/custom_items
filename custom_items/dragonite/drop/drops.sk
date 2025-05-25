@@ -1,0 +1,9 @@
+on death of ender dragon:
+    if attacker is player:
+        drop 6 amethyst shards named "&e龙鳞" with lore "&7来自末地的龙鳞" with nbt from "{CustomItem:DragonScale}" at attacker without velocity
+        drop 4 echo shards named "&e终末结晶" with lore "&7终末的能量精华" with nbt from "{CustomItem:EndEnergy}" at attacker without velocity
+
+on death of enderman:
+    if attacker is player:
+        drop 1 echo shards named "&e终末结晶" with lore "&7终末的能量精华" with nbt from "{CustomItem:EndEnergy}" at victim without velocity
+

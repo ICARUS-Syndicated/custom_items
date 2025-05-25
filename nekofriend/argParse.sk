@@ -1,0 +1,5 @@
+import:
+    java.lang.String
+
+function parseArgument(argStr: text):: object:
+    return {_argStr}.split(" ")

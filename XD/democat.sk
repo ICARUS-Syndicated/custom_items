@@ -1,0 +1,20 @@
+function demo(player:player):
+    set {_yaw} to yaw of {_player}
+    loop 3600 times:
+        add 1 to {_yaw}
+        set yaw of {_player} to mod({_yaw},360)
+
+
+on right click with name tag:
+    if all:
+        display name of player's tool is "呆猫"
+        the clicked entity is a cat
+    then:
+        set {_yaw} to 0
+        apply potion of levitation of tier 1 to the clicked entity for 10 seconds
+        demo(player)
+
+on right click on cat:
+    if name of event-entity is "呆猫":
+        apply potion of levitation of tier 127 to the player for 2 seconds
+        demo(player)

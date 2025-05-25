@@ -1,0 +1,158 @@
+
+options:
+    normal_cooldown: 0.1
+    reload_cooldown: 7
+    max_distance: 8
+
+on right click with iron hoe:
+    set {_left} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "SolemnLamentRight"
+        {_left} is a netherite hoe
+        nbt of {_left} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_left} is "SolemnLamentLeft"
+    then:
+        shoot(player,"healing")
+
+on right click with netherite hoe:
+    set {_r} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "SolemnLamentLeft"
+        {_r} is an iron hoe
+        nbt of {_r} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_r} is "SolemnLamentRight"
+    then:
+        if player is not sneaking:
+            shoot(player,"normal")
+        else if player is sneaking:
+            shoot(player,"acclerated")
+
+function shoot(p: player,type: string):
+    # 先判断换弹冷却
+    if {reload_cooldown::%{_p}'s uuid%} is set:
+        if difference between now and {reload_cooldown::%{_p}'s uuid%} is less than {@reload_cooldown} second:
+            play sound "block.chain.place" with volume 0.5 at {_p}
+            send action bar "&c换弹! 请等待 %difference between {@reload_cooldown} second and (difference between now and {normal_cooldown::%{_p}'s uuid%})%" to {_p}
+            stop
+
+    # 再判断射击冷却
+    if {normal_cooldown::%{_p}'s uuid%} is set:
+        if difference between now and {normal_cooldown::%{_p}'s uuid%} is less than {@normal_cooldown} second:
+            play sound "block.redstone_torch.burnout" with volume 0.5 at {_p}
+            send action bar "&c射击冷却中! 请等待 %difference between {@normal_cooldown} second and (difference between now and {normal_cooldown::%{_p}'s uuid%})%" to {_p}
+            stop
+    set {normal_cooldown::%{_p}'s uuid%} to now
+
+    # 记录独立射击次数以决定激光颜色与射击效果
+    if {shoot_times::%{_p}'s uuid%} is not set:
+        set {shoot_times::%{_p}'s uuid%} to 0
+
+    if {shoot_times::%{_p}'s uuid%} >= 21:
+        send action bar "&c换弹! 请等待 %difference between {@reload_cooldown} second and (difference between now and {normal_cooldown::%{_p}'s uuid%})%" to {_p}
+        set {reload_cooldown::%{_p}'s uuid%} to now
+        set {shoot_times::%{_p}'s uuid%} to 0
+        stop
+    else if mod({shoot_times::%{_p}'s uuid%},2) is 1:
+        set {_color} to white
+        set {_effect} to "white"
+    else:
+        set {_color} to black
+        set {_effect} to "black"
+
+    # send {shoot_times::%{_p}'s uuid%} to {_p}
+
+    if {shoot_times::%{_p}'s uuid%} > 15:
+        send action bar "&e再射击 %difference between {shoot_times::%{_p}'s uuid%} and 20% 发弹夹就打空了！" to {_p}
+
+    # 判断射击类型
+    if {_type} is "normal":
+        draw({_effect}, {_color}, {_p})
+        add 1 to {shoot_times::%{_p}'s uuid%}
+        play sound "block.amethyst_block.break" with volume 0.5 at {_p}
+    else if {_type} is "acclerated":
+        set {_i} to 0
+        while {_i} < 3:
+            draw("white", white, {_p})
+            draw("black", black, {_p})
+            wait 1 tick
+            add 1 to {_i}
+            play sound "block.amethyst_block.break" with volume 0.5 at {_p}
+        wait 4 tick
+        set {_i} to 0
+        while {_i} < 7:
+            draw("white", white, {_p})
+            wait 1 tick
+            add 1 to {_i}
+            play sound "block.amethyst_block.break" with volume 0.5 at {_p}
+        wait 4 tick
+        set {_i} to 0
+        while {_i} < 7:
+            draw("black", black, {_p})
+            wait 1 tick
+            add 1 to {_i}
+            play sound "block.amethyst_block.break" with volume 0.5 at {_p}
+        
+        send action bar "&e准备射击&b灵魂&e伤害子弹！" to {_p}
+        wait 12 tick
+        draw("pale", cyan, {_p})
+        add 1 to {_i}
+        play sound "block.beacon.power_select" with volume 0.5 at {_p}
+        set {shoot_times::%{_p}'s uuid%} to 21
+        send action bar "&c右键手动换弹！" to {_p}
+    else if {_type} is "healing":
+        draw("heal", blue, {_p})
+        play sound "block.cherry_wood.break" with volume 1.2 at {_p}
+        send action bar "&e注意：您正在使用治疗模式" to {_p}
+        set {shoot_times::%{_p}'s uuid%} to {shoot_times::%{_p}'s uuid%} + 2
+
+
+function draw(effect:string, color:color, p:player):
+    set {_loc} to {_p}'s eyes location
+    loop 120 times:
+        set {_progress} to loop-number / 80
+        set {_currentDistance} to {_progress} * {@max_distance}
+        set {_l} to location {_currentDistance} meters in front of {_p}'s eyes
+        draw 1 of dust using dustOption({_color}, 1) at {_l}
+        set {_radius} to 2
+        loop all entities in radius {_radius} of {_l}:
+            set {_entity} to loop-entities
+            if {_hit::%{_entity}'s uuid%} is not set:
+                set {_hit::%{_entity}'s uuid%} to false
+            if all:
+                {_entity} is not {_p}
+                {_hit::%{_entity}'s uuid%} is false
+            then:
+                if {_effect} is "white":
+                    remove glowing from potion effects of {_entity}
+                    damage {_entity} by 1 heart with fake cause lava
+                    set {_entity}'s invulnerability ticks to 0
+                    apply glowing 1 to {_entity} for 2 seconds
+                else if {_effect} is "black":
+                    remove wither from potion effects of {_entity}
+                    damage {_entity} by 1 heart with fake cause wither
+                    set {_entity}'s invulnerability ticks to 0
+                    apply wither 2 to {_entity} for 3 seconds
+                else if {_effect} is "pale":
+                    damage {_entity} by 4 with fake cause void
+                    set {_entity}'s invulnerability ticks to 0
+                else if {_effect} is "heal":
+                    damage {_entity} by -1 heart
+                    set {_entity}'s invulnerability ticks to 0
+                    apply speed 2 to {_entity} for 2 seconds
+                play sound "block.amethyst_block.break" with volume 1.2 at {_entity}
+                set {_hit::%{_entity}'s uuid%} to true
+    set {_hit::%{_entity}'s uuid%} to false
+
+on death:
+    set {_left} to slot 40 of attacker
+    if all:
+        victim is a player
+        nbt of attacker's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of attacker's tool is "SolemnLamentRight"
+        {_left} is a netherite hoe
+        nbt of {_left} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_left} is "SolemnLamentLeft"
+    then:
+        event.setDeathMessage("%victim% 被 %attacker% 用一道神圣的祷词贯穿了")

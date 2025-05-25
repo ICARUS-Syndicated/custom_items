@@ -1,0 +1,168 @@
+# 
+# @Author: airlenter, wer
+# @Description: 花团锦簇弓组，对一个向量目标进行分析
+#               一个特殊的ScatterBow，使用WerzScatterarrow发射时，
+#               会从玩家背后生成箭矢，通过玩家时呈现圆形散射，并追踪附近的生物
+# 
+    
+# 检测玩家使用ScatterBow射击
+on projectile shoot:
+    if shooter is a player:
+        set {_player} to shooter
+        set {_item} to {_player}'s tool
+        
+        # 检查是否使用散射弓
+        if string tag "CustomItem" of nbt of {_item} is "WerzScatterbow":
+            # 检查所选箭矢是否为散射箭
+            set {_projectile} to projectile
+            set {_arrows::*} to all items in {_player}'s inventory
+            loop {_arrows::*}:
+                if loop-value is an arrow:
+                    if string tag "CustomItem" of nbt of loop-value is "WerzScatterarrow":
+                        set {_scatterarrow} to true
+                        # 取消原始箭矢
+                        cancel event
+                        
+                        # 设置箭矢数量和圆形半径
+                        set {_arrows} to 16  # 增加箭矢数量以形成更明显的圆形
+                        set {_radius} to 1.5
+                        set {_speed} to 2.5  # 增加速度
+                        
+                        # 获取玩家的位置和方向
+                        set {_loc} to location of {_player}
+                        # set {_direction} to direction of shooter
+                        
+                        
+                        # 生成围绕玩家的圆形箭矢
+                        loop {_arrows} times:
+                            set {_angle} to (loop-number * 360 / {_arrows})
+                            set {_radians} to {_angle} * 0.01745  # 角度转弧度 (π/180)
+
+                            # 计算圆周上的位置
+                            set {_x} to {_radius} * cos({_radians})
+                            set {_y} to 0  # 保持在同一水平面上
+                            set {_z} to {_radius} * sin({_radians})
+                            
+                            # 创建围绕玩家的向量
+                            set {_circleVector} to vector({_x}, {_y}, {_z})
+                            
+                            # 获取玩家前方的位置作为起始点
+                            set {_spawnLoc} to {_loc}
+                            
+                            # 计算射击方向 - 玩家的方向加上圆形偏移
+                            set {_shootDirection} to {_direction} + {_circleVector}
+                            set {_shootDirection} to normalized {_shootDirection}
+                            
+                            # 设置箭矢速度
+                            set {_velocity} to {_shootDirection} * {_speed}
+                            
+
+                            # 从玩家位置发射箭矢
+                            set {_currArrow} to shoot an arrow from {_spawnLoc} at speed 2
+
+
+                            set {_arrow} to last spawned arrow
+                            
+                            send "%loop-number% | A:%{_angle}% %{_radians}% | %{_velocity}% | %{_arrow}% | %{_currArrow}%" to {_player}
+
+                            # 设置箭矢属性
+                            set velocity of {_arrow} to {_velocity} normalized * 1
+
+                            set shooter of {_arrow} to {_player}
+                            # 使箭矢成为暴击箭
+                            set metadata value "critical" of {_arrow} to true
+                            
+                            # 添加追踪逻辑
+                            set {_uuid} to uuid of {_arrow}
+                            set {scatter.arrows::%{_uuid}%} to {_arrow}
+                            
+                            # 添加发射粒子效果
+                            draw 3 of dust using dustOption(red, 1) at {_arrow}
+                        
+                        # 为了防止过度消耗，移除一支箭矢
+                        remove 1 arrow from {_player}'s inventory
+                        
+                        # 播放特效
+                        play sound "entity.illusioner.cast_spell" with volume 1 at {_player}'s location
+                        play sound "entity.blaze.shoot" with volume 0.7 at {_player}'s location
+                        exit loop
+        
+# 箭矢追踪逻辑
+every 2 ticks:
+    loop {scatter.arrows::*}:
+        set {_arrow} to loop-value
+        if {_arrow} is not set:
+            delete {scatter.arrows::%loop-index%}
+            continue
+            
+        if {_arrow} exists:
+            # 获取5格范围内的生物
+            set {_loc} to location of {_arrow}
+            set {_shooter} to shooter of {_arrow}
+            set {_nearestMob} to null
+            set {_minDistance} to 5 # 追踪范围
+            
+            loop all entities in radius {_minDistance} around {_arrow}:
+                set {_entity} to loop-entity
+                if {_entity} is not {_shooter}:
+                    if {_entity} is a monster:
+                        if {_entity} is not a player:
+                            set {_dist} to distance between {_arrow} and {_entity}
+                            if {_dist} < {_minDistance}:
+                                set {_minDistance} to {_dist}
+                                set {_nearestMob} to {_entity}
+                    else if {_entity} is a living entity:
+                        if {_entity} is not a player:
+                            set {_dist} to distance between {_arrow} and {_entity}
+                            if {_dist} < {_minDistance}:
+                                set {_minDistance} to {_dist}
+                                set {_nearestMob} to {_entity}
+            
+            # 如果找到目标，调整箭矢飞行方向
+            if {_nearestMob} is set:
+                set {_target} to location of {_nearestMob}
+                set {_arrowLoc} to location of {_arrow}
+                set {_direction} to vector from {_arrowLoc} to {_target}
+                set {_currentVel} to velocity of {_arrow}
+                
+                # 计算新的速度（原速度的70%加上目标方向的30%）
+                set {_speed} to length of {_currentVel}
+                set {_normalizedDir} to normalized vector {_direction}
+                set {_newVel} to ({_currentVel} * 0.7) + ({_normalizedDir} * {_speed} * 0.3)
+                
+                # 应用新速度
+                set velocity of {_arrow} to {_newVel}
+                
+                # 添加追踪粒子效果
+                # show 1 redstone dust colored purple at {_arrow}
+                draw 1 of dust at {_arrow}
+        else:
+            delete {scatter.arrows::%loop-index%}
+
+# 箭矢命中效果
+on projectile hit:
+    set {_arrow} to projectile
+    set {_uuid} to uuid of {_arrow}
+    
+    if {scatter.arrows::%{_uuid}%} is set:
+        # 命中时的粒子和声音效果
+        play sound "entity.generic.explode" with volume 0.3 at location of {_arrow}
+        show 20 explosion at location of {_arrow}
+        
+        # 清理箭矢
+        delete {scatter.arrows::%{_uuid}%}
+
+
+command /werzscatterbow:
+    permission: werzutils.scatterbow
+    permission message: &c你没有权限使用这个命令喵
+    trigger:
+        set {_bowlore::*} to "§7airlenter的&c花团锦簇" and "§7搭配:&a&l[花团]" and "&c&l&nTestItem"
+        give player bow named "&4锦簇" with lore {_bowlore::*} with nbt from "{CustomItem:WerzScatterbow}"
+    
+command /werzscatterarrow:
+    permission: werzutils.scatterarrow
+    permission message: &c你没有权限使用这个命令喵
+    trigger:
+        set {_arrowlore::*} to "§7专为ScatterBow设计的特殊箭矢" and "§cIt is blooming" and "&c&l&nTestItem"
+        give player 64 arrow named "&e花团" with lore {_arrowlore::*} with nbt from "{CustomItem:WerzScatterarrow}"

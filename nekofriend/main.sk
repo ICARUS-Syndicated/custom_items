@@ -1,0 +1,172 @@
+options:
+    debug: false
+
+import:
+    java.util.Arrays
+    org.bukkit.Bukkit
+    java.util.UUID
+
+
+function debug(msg: text):
+    {@debug} = true
+    loop all players:
+        loop-player have permission "frd.debug"
+        send "&c&l🚫&r🪳&r &e&ldebug | &a%unix timestamp of now% &r%{_msg}%" to loop-player
+
+function debugLine():
+    debug("===========================")
+
+#===========================#
+#                           #
+#   BlackFriend 猫娘控制逻辑   #
+#                           #
+#===========================#
+
+function getSlavesCount(target: offlineplayer):: number:
+    debug("&c&l!!!&r触发getSlavesCount(target: offlineplayer)函数")
+    debugLine()
+    debug("传参>>> target: offlineplayer = %{_target}%")
+    debugLine()
+    return size of {BlackFrienedSlaveList::%{_target}'s uuid%::*}
+
+
+function bind(target: player, slave: player):
+      # 目标玩家^            性奴^
+    debug("&c&l!!!&r触发bind(target: player, slave: player)函数")
+    debugLine()
+    debug("传参>>> target: player = %{_target}%")
+    debug("传参>>> slave: player = %{_slave}%")
+    debugLine()
+    #debug("target: %{_target}%")
+    set {_num} to getSlavesCount({_target})
+    add {_slave}'s uuid to {BlackFrienedSlaveList::%{_target}'s uuid%::*}
+    set {BlackFrienedMaster::%{_slave}'s uuid%} to {_target}'s uuid
+    #debug({_target}'s uuid)
+    debug("bind: %{BlackFrienedSlaveList::%{_target}'s uuid%::*}%")
+
+function unbind(target: offlineplayer, slave: offlineplayer):
+
+    debug("&c&l!!!&r触发unbind(target: offlineplayer, slave: offlineplayer)函数")
+    debugLine()
+    debug("传参>>> target: offlineplayer = %{_target}%")
+    debug("传参>>> slave: offlineplayer = %{_slave}%")
+    debugLine()
+
+    loop {BlackFrienedSlaveList::%{_target}'s uuid%::*}:
+        loop-value = {_slave}'s uuid
+        delete {BlackFrienedSlaveList::%{_target}'s uuid%::%loop-index%}
+        delete {BlackFrwienedMaster::%{_slave}'s uuid%}
+        delete {BlackFrienedMaster::%{_slave}'s uuid%}
+        delete {BlackFriendAction::%{_slave}'s uuid%::*}
+        delete {BlackFriendTaskList::%{_slave}'s uuid%::*}
+        stop
+
+
+function getSlavesOf(target: offlineplayer):: objects:
+    # 获取玩家的猫娘列表
+    #debug("{BlackFrienedSlaveList::%{_target}'s uuid%::*}: %{BlackFrienedSlaveList::%{_target}'s uuid%::*}%")
+    #debug("{_target}'s uuid: %{_target}'s uuid%")
+    #debug("{_target}: %{_target}%")
+    #debug("SB's uuid: %offlineplayer("SBSBSBSBSBSBSBSB")'s uuid%")
+    debug("&c&l!!!&r触发getSlavesOf(target: offlineplayer)函数")
+    debugLine()
+    debug("传参>>> target: offlineplayer = %{_target}%")
+    debugLine()
+    loop {BlackFrienedSlaveList::%{_target}'s uuid%::*}:
+        add Bukkit.getOfflinePlayer(UUID.fromString(loop-value)) to {_list::*}
+    return {_list::*}
+
+function getMasterOf(target: offlineplayer):: offlineplayer:
+    # 获取猫娘的主人
+    # 返回一个离线玩家
+    debug("&c&l!!!&r触发getMasterOf(target: offlineplayer)函数")
+    debugLine()
+    debug("传参>>> target: offlineplayer = %{_target}%")
+    debugLine()
+
+    return Bukkit.getOfflinePlayer(UUID.fromString({BlackFrienedMaster::%{_target}'s uuid%}))
+
+
+
+#===========================#
+#                           #
+#   BlackFriend 任务发布逻辑   #
+#                           #
+#===========================#
+
+function getTaskCount(target: player):: number:
+
+    debug("&c&l!!!&r触发getTaskCount(target: player)函数")
+    debugLine()
+    debug("传参>>> target: player = %{_target}%")
+    debugLine()
+
+    return size of {BlackFriendTaskList::%{_target}'s uuid%::*}
+
+function publishTask(target: player, task: text):
+
+    debug("&c&l!!!&r触发publishTask(target: player, task: text)函数")
+    debugLine()
+    debug("传参>>> target: player = %{_target}%")
+    debug("传参>>> task: text = %{_text}%")
+    debugLine()
+
+    set {_length} to getTaskCount({_target})
+    # hash生成算法
+    set {_origin} to "%{_target}'s uuid% | %{_task}% | %unix timestamp of now%"
+    #debug({_origin})
+    set {_sha} to {_origin} hashed with SHA-256
+    #debug({_sha})
+
+    set {BlackFriendTaskList::%{_target}'s uuid%::%{_sha}%} to {_task}
+
+function deleteTask(target: player, taskID: text):
+
+    debug("&c&l!!!&r触发deleteTask(target: player, taskID: text)函数")
+    debugLine()
+    debug("传参>>> target: player = %{_target}%")
+    debug("传参>>> taskID: text = %{_taskID}%")
+    debugLine()
+
+    if {BlackFriendTaskList::%{_target}'s uuid%::%{taskID}%} is set:
+        delete {BlackFriendTaskList::%{_target}'s uuid%::%{taskID}%}
+    else:
+        loop {BlackFriendTaskList::%{_target}'s uuid%::*}:
+            loop-index.startsWith({_taskID})
+            debug("&b%loop-index%")
+            delete {BlackFriendTaskList::%{_target}'s uuid%::%loop-index%}
+            stop
+
+function getTaskListOf(target: offlineplayer):: objects:
+
+    debug("&c&l!!!&r触发getTaskListOf(target: offlineplayer)函数")
+    debugLine()
+    debug("传参>>> target: offlineplayer = %{_target}%")
+    debugLine()
+
+    loop {BlackFriendTaskList::%{_target}'s uuid%::*}:
+        add loop-index to {_shaList::*}
+    return {_shaList::*}
+
+function playSexSound(target: player):
+    play sound "block.honey_block.slide" to {_target}
+    wait for 1 ticks
+    play sound "entity.cod.flop" to {_target}
+
+
+
+command /publishTask <text>:
+    trigger:
+        publishTask(sender, arg-1)
+
+command /deleteTask <text>:
+    trigger:
+        deleteTask(sender, arg-1)
+
+command /listTask:
+    trigger:
+        loop getTaskListOf(sender):
+            debug("%loop-value%")
+
+on tab complete of "/deletetask":
+    set tab completions for position 1 to getTaskListOf(player)

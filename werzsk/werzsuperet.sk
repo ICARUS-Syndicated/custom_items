@@ -1,0 +1,14 @@
+on load:
+    set {_item_superbook} to book named "&6&lSuper Enchanting Book" with lore "&6神秘的超级附魔书" with nbt from "{CustomItem:SuperTableBook,Enchantments:[{id:'minecraft:unbreaking',lvl:1}],HideFlags:63}"
+    
+    set {_item_book} to book
+    set {_item_iron_block} to iron block
+    set {_item_gold_block} to gold block
+    set {_item_diamond_block} to diamond block
+    set {_item_emerald_block} to emerald block
+    set {_item_netherite_block} to netherite block
+    set {_item_obsidian} to obsidian
+    set {_item_dragon_egg} to dragon egg
+    set {_item_xpbottle} to experience bottle
+
+    register new shapeless recipe for {_item_superbook} using {_item_iron_block},{_item_gold_block},{_item_diamond_block},{_item_emerald_block},{_item_book},{_item_netherite_block},{_item_obsidian},{_item_xpbottle},{_item_dragon_egg} with id "minecraft:superbook"

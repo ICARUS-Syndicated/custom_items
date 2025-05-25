@@ -1,0 +1,33 @@
+on right click:
+    set {_t} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "CoroniteBlade"
+        nbt of {_t} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_t} is "SunlitTemplate"
+    then:
+        set {_result} to diamond sword named "&d日耀喷发剑" with lore "&7来自太阳的力量","当前温度：224°M","&7蹲下右键吸收熔岩提高剑刃温度" with nbt from "{CustomItem:SunlitBlade}"
+        set {_u} to unix timestamp of now
+        set long tag "LastCharge" of nbt of {_result} to {_u}
+        enchant {_result} with fire aspect 5
+        play sound "block.anvil.use"
+        set slot 40 of player to air
+        set player's tool to {_result}
+
+
+# 纪念传奇炸服脚本日耀喷发剑
+# on anvil prepare:
+#    set {_s} to slot 0 of event-inventory
+#    set {_m} to slot 1 of event-inventory
+#    if all:
+#        nbt of {_s} has tag "CustomItem"
+#        string tag "CustomItem" of nbt of {_s} is "CoroniteBlade"
+#        nbt of {_m} has tag "CustomItem"
+#        string tag "CustomItem" of nbt of {_m} is "SunlitTemplate"
+#    then:
+#        set {_result} to diamond sword named "&d日耀喷发剑" with lore "&7来自太阳的力量","&7蹲下右键吸收熔岩提高剑刃温度","&7当前温度：500°M" with nbt from "{CustomItem:SunlitBlade}"
+#        enchant {_result} with fire aspect 5
+#        set slot 0 of event-inventory to {_result}
+#        set slot 1 of event-inventory to air
+
+

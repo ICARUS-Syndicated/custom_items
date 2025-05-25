@@ -1,0 +1,11 @@
+on load:
+    set {_l} to iron ingot named "&e雷鸣铁锭" with lore "&7雷光在金属中闪动" with nbt from "{CustomItem:LightningIron}"
+    set {_c} to creeper head named "&e带电头颅" with lore "&7别手滑放在地上了" with nbt from "{CustomItem:LightningCore}"
+    set {_i} to iron ingot
+    register new shaped recipe:
+        id: "lighting_iron"
+        result: 8 of {_l}
+        shape: "aaa","aba","aaa"
+        ingredients:
+            set ingredient of "a" to {_i}
+            set ingredient of "b" to {_c}

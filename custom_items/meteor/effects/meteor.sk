@@ -1,0 +1,149 @@
+options:
+    meteor_cooldown: 5 # 特殊攻击的冷却时间（秒）
+    arrows_per_burst: 7 # 特殊攻击时发射的箭矢数量
+    tracking_radius: 5 # 箭矢开始追踪的半径
+    flight_time: 0.1 # 箭矢飞行多久后开始追踪（秒）
+    arrow_speed: 2.0 # 箭矢基础速度
+    damage_radius: 3 # 箭矢击中时的伤害半径
+
+on shoot:
+    if all:
+        shooter is a player
+        nbt of shooter's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of shooter's tool is "Meteor"
+    then:
+        set {_shooter} to shooter
+        set {_arrow} to projectile
+        
+        # 让箭矢先正常飞行一段时间
+        wait {@flight_time} seconds
+        
+        # 确保箭矢仍然存在
+        if {_arrow} is not alive:
+            stop
+            
+        # 添加特效显示箭矢已启动追踪模式
+        # display flame particle at location of {_arrow}
+        draw 2 of dragon breath at {_arrow}
+        draw 10 of dust using dustOption(purple, 2) at {_arrow}
+        
+        # 开始追踪循环
+        set {_tracking} to true
+        set {_attempts} to 0
+        
+        while {_arrow} is alive:
+            add 1 to {_attempts}
+            if {_attempts} > 30: # 防止无限循环
+                stop
+                
+            # 寻找附近的目标（优先怪物和其他玩家）
+            set {_target} to {_shooter} # 默认无目标
+            
+            # 寻找最近的有效目标
+            loop all entities in radius {@tracking_radius} around {_arrow}:
+                # 跳过无效目标
+                if loop-entity is {_shooter}:
+                    continue
+                if loop-entity is an arrow:
+                    continue
+                if loop-entity is a dropped item:
+                    continue
+                if loop-entity is an armor stand:
+                    continue
+                if loop-entity is an item frame:
+                    continue
+                if loop-entity is a painting:
+                    continue
+                if loop-entity is a boat:
+                    continue
+                if loop-entity is an experience orb:
+                    continue
+                    
+                # 设置目标（有敌对生物时优先追踪）
+                if loop-entity is a monster:
+                    set {_target} to loop-entity
+
+                    exit loop # 找到怪物就直接选择
+                if loop-entity is a player:
+                    if loop-entity is not {_shooter}:
+                        set {_target} to loop-entity
+
+                if loop-entity is living entity:
+                    if loop-entity is not {_shooter}:
+                        if {_target} is {_shooter}: # 仅当尚未找到任何目标时
+                            set {_target} to loop-entity
+
+                        
+            # 如果找到有效目标，进行追踪
+            if {_target} is not {_shooter}:
+                # 获取目标位置（稍微瞄准头部提高命中率）
+                set {_target_loc} to location of {_target}
+                set y-coordinate of {_target_loc} to (y-coordinate of {_target_loc}) + 1.5
+                
+                # 计算方向向量
+                set {_direction} to vector from location of {_arrow} to {_target_loc}
+                
+                # 调整箭矢速度和方向
+                set velocity of {_arrow} to {_direction} normalized * {@arrow_speed}
+                
+                # 追加一点提前量以应对移动目标
+                set {_target_vel} to velocity of {_target}
+                if vector length of {_target_vel} > 0.1:
+                    set velocity of {_arrow} to (velocity of {_arrow}) + ({_target_vel} * 0.2)
+                
+                # 特效显示箭矢在追踪
+                # display flame particle at location of {_arrow}
+                draw 10 of dust using dustOption(purple, 2) at {_arrow}
+            
+            # 短暂等待后继续更新
+            wait 2 ticks
+            
+        # 箭矢命中或消失，检查是否需要产生爆炸效果
+        if {_arrow} is not alive:
+            set {_explosion_loc} to {_arrow}'s location
+            
+            # 特效和声音
+            play sound "entity.generic.explode" with volume 0.5 at {_explosion_loc}
+            play sound "block.fire.extinguish" with volume 0.3 at {_explosion_loc}
+            # display 10 explosion particles at {_explosion_loc}
+            # display 5 large_smoke particles at {_explosion_loc}
+            draw 10 of dust using dustOption(purple, 10)  at {_explosion_loc}
+            draw 5 of large_smoke at {_explosion_loc}
+
+            
+            # 对范围内的实体造成伤害
+            loop all entities in radius {@damage_radius} around {_explosion_loc}:
+                if loop-entity is living entity:
+                    if loop-entity is not {_shooter}: # 不伤害射击者
+                        push loop-entity (direction from {_explosion_loc} to loop-entity) with force 0.5
+
+on swap hand items:
+    if all:
+        nbt of event-player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of event-player's tool is "Meteor"
+    then:
+        cancel event
+        set {_p} to event-player
+        if {meteor_cooldown::%{_p}'s uuid%} is set:
+            if difference between now and {meteor_cooldown::%{_p}'s uuid%} is less than {@meteor_cooldown} second:
+                play sound "block.redstone_torch.burnout" with volume 0.5 at {_p}
+                send action bar "&c射击冷却中! 请等待 %difference between {@meteor_cooldown} second and (difference between now and {meteor_cooldown::%{_p}'s uuid%})%" to {_p}
+                stop
+        else:
+            set {meteor_cooldown::%{_p}'s uuid%} to now
+        set {meteor_cooldown::%{_p}'s uuid%} to now
+        set {_i} to 0
+        while {_i} < 7:
+            shoot an arrow from the event-player at speed 2
+            add 1 to {_i}
+            wait 1 tick
+
+on damage:
+    if all:
+        nbt of attacker's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of attacker's tool is "Meteor"
+    then:
+        set victim's invulnerability ticks to 0
+    
+on quit:
+    clear {meteor_cooldown::%player's uuid%}

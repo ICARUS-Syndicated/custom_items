@@ -1,0 +1,22 @@
+on load:
+    register new furnace recipe:
+        id: "coronite"
+        result: iron ingot
+        input: iron ingot
+        cooktime: 10 seconds
+        experience: 6
+
+on smelt:
+    set {_m} to slot 0 of event-block
+    if type of {_m} is iron ingot:
+        if nbt of {_m} has tag "Cooked":
+            set {_count} to int tag "Cooked" of nbt of {_m}
+            if {_count} = 9:
+                set the smelted item to iron ingot named "&d冕锭" with lore "&7锟斤拷烫烫烫!" with nbt from "{CustomItem:Coronite}"
+            else:
+                set int tag "Cooked" of nbt of smelted item to {_count}
+                add 1 to int tag "Cooked" of nbt of smelted item
+        else:
+            set smelted item to iron ingot with nbt from "{Cooked:1}"
+
+    

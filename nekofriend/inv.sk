@@ -1,0 +1,25 @@
+options:
+    sb_world_detech: false
+
+on right click on player:
+    player is sneaking
+    event-entity is a player
+    getMasterOf(event-entity) = player
+
+    if event-player is in world("world"):
+        {@sb_world_detech} = true
+        send "&c猫娘所在世界禁用了Invsee" to getMasterOf(player)
+        stop trigger
+    if event-player is in world("huodong"):
+        {@sb_world_detech} = true
+        send "&c猫娘所在世界禁用了Invsee" to getMasterOf(player)
+        stop trigger
+
+    open event-entity's inventory for player
+
+on teleport:
+    event-entity is a player
+    getMasterOf(event-entity) = player
+    send "&c传送，已经关闭背包"
+
+    close getMasterOf(event-player)'s inventory

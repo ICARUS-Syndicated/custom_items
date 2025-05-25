@@ -1,0 +1,13 @@
+on load:
+    set {_colddiamond} to diamond with name "&e冰霜钻石" with lore "&e像一大块冰。" with nbt from "{CustomItem:GlacierDiamond}"
+    set {_fullglaciercore} to heart of the sea with name "&e冰川核心" with lore "&7冰川的力量。" with nbt from "{CustomItem:GlacierCore}"
+    set {_iceywhip} to lead with name "&e冷鞭" with lore "&7寒风萧瑟..." with nbt from "{CustomItem:IceyWhip}"
+    register new shapeless recipe:
+        result: {_iceywhip}
+        id: "custom:icey_whip"
+        ingredients:
+            add {_colddiamond} to ingredients
+            add {_colddiamond} to ingredients
+            add {_colddiamond} to ingredients
+            add {_fullglaciercore} to ingredients
+            add lead to ingredients

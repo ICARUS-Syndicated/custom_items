@@ -1,0 +1,51 @@
+on right click with iron sword:
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "LifeForADaredevil"
+    then:
+        set {_max_health} to player's max health 
+        if int tag "DecreaseAmount" of nbt of player's tool is not set:
+            set int tag "DecreaseAmount" of nbt of player's tool to 1
+            set the maximum health of the player to ({_max_health} - 1)
+            send action bar "&b剑好像产生了一些变化..." to player
+            play sound "block.beacon.power_select" with volume 0.5 at player
+        else if int tag "DecreaseAmount" of nbt of player's tool > 5:
+            send action bar "&b剑停止了共鸣..." to player
+            stop
+        else:
+            add 1 to int tag "DecreaseAmount" of nbt of player's tool
+            set the maximum health of the player to ({_max_health} - 1)
+            send action bar "&b剑好像产生了一些变化..." to player
+            play sound "block.beacon.power_select" with volume 0.5 at player
+
+on swap hand items:
+    if all:
+        nbt of event-player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of event-player's tool is "LifeForADaredevil"
+    then:
+        cancel event
+        set {_decrease_amount} to int tag "DecreaseAmount" of nbt of event-player's tool
+        if {_decrease_amount} is none:
+            send action bar "&b你还没有和剑共鸣过..." to event-player
+            play sound "block.beacon.power_select" with volume 0.5 at event-player
+        else if {_decrease_amount} <= 0:
+            send action bar "&b剑暗淡无光..." to event-player
+            stop
+        else:
+            add -1 to {_decrease_amount}
+            set int tag "DecreaseAmount" of nbt of player's tool to {_decrease_amount}
+            add 1 to player's max health
+            send action bar "&b力量重新回到你的身体..." to event-player
+            play sound "block.beacon.power_select" with volume 0.5 at event-player
+
+on damage:
+    if all:
+        nbt of attacker's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of attacker's tool is "LifeForADaredevil"
+    then:
+        set {_damage_addition} to int tag "DecreaseAmount" of nbt of attacker's tool
+        increase the damage by {_damage_addition}
+        draw 10 of dust using dustOption(cyan, 3) at victim
+        play sound "block.beacon.power_select" with volume 0.5 at victim
+        
+    

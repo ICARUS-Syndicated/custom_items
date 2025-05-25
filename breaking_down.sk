@@ -1,0 +1,14 @@
+on load:
+    register shapeless recipe:
+        id: "custom:quartz"
+        result: 4 quartz
+        group: "custom tools"
+        ingredients:
+            add quartz block to ingredients
+    
+    register shapeless recipe:
+        id: "custom:amethyst"
+        result: 4 amethyst shard
+        group: "custom tools"
+        ingredients:
+            add amethyst block to ingredients

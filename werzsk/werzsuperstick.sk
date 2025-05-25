@@ -1,0 +1,86 @@
+options:
+    prefix: &r&l&c[WerzSUPERUtils]&r
+
+# 定义物品
+on load:
+    set {werstick} to stick named "&bwerzstick:werstick:debug" with lore "&7werstick-the most powerful stick"
+    enchant {werstick} with sharpness 1
+
+command /werzstick:
+    permission: werzutils.werzdebugstick
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        give player {werstick}
+
+function rmv(fcz_target: object, player: player):
+    if {_fcz_target}'s type is a player:
+        send actionbar "{@prefix} 正在删除实体 &6%{_fcz_target}%" to {_player}
+        make console execute command "/kick %{_fcz_target}% 你已被服务器清除，操作者 &k&6%{_player}%"
+
+    else if {_fcz_target}'s type is entity:
+        kill {_fcz_target} parsed as entity
+        damage {_fcz_target} by 999999999
+        send actionbar "{@prefix} 正在删除实体 %{_fcz_target}%" to {_player}
+    
+
+on right click:
+    if player's tool is {werstick}:
+        set {_focous_target} to player's target
+        rmv({_focous_target}, player)
+
+on left click:
+    if player's tool is {werstick}:
+        
+        # 准备音效
+        play sound "entity.cat.purr" with volume 1 at player
+        
+        # 创建更短的充能动画效果
+        set {_chargeTime} to 0
+        while {_chargeTime} < 5:
+            add 1 to {_chargeTime}
+            # 充能期间的粒子效果
+            draw 15 of soul at player with extra 0.3
+            draw 8 of sculk_charge at player with extra 0.3
+            wait 1 tick
+        
+        # 发射音波音效
+        play sound "entity.cat.ambient" with volume 2.0 at player
+        
+        # 创建瞬时激光效果
+        set {_maxDistance} to 30
+        set {_loc} to player's eyes location
+        
+        # 使用循环快速绘制整条激光路径
+        loop 60 times:
+            set {_progress} to loop-number / 60
+            set {_currentDistance} to {_progress} * {_maxDistance}
+            set {_l} to location {_currentDistance} meters in front of player's eyes
+            
+            set {_n} to 2
+
+            # 使用更密集的粒子效果模拟激光
+            draw 4 of end_rod at {_l} with extra 0.05
+            
+            # 检测每一点周围范围内的实体
+            loop all entities in radius {_n} of {_l}:
+                set {_entity} to loop-entities
+                if {_entity} is not player:
+
+                    rmv({_entity}, player)
+                    
+                    #强力击退效果
+                    push {_entity} upwards at speed 92
+                    # push {_entity} (direction from {_entity} to player) at speed -2.5
+                    
+                    # 命中特效
+                    play sound "entity.experience_orb.pickup" with volume 0.05 at player
+
+            
+            # 每点之间短暂等待，使激光更连贯
+            # wait 1 tick
+        
+        # 清除命中标记
+        delete {_hit::*}
+        
+        # 攻击结束音效
+        play sound "entity.cat.ambient" with volume 1.0 at player

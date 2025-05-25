@@ -1,0 +1,33 @@
+options:
+    prefix: &c&l[Death Back]&r
+    lastcount: 5
+
+function deatback(player:player):
+    if {deathback.%{_player}'s uuid%.lastdeath} is not set:
+        send "{@prefix}你没有上次死亡的坐标！" to {_player}
+    else:
+        send "{@prefix}正在回溯..." to {_player}
+        teleport {_player} to {deathback.%{_player}'s uuid%.lastdeath}
+
+command /deathback [<string="back">] [<string>]:
+    aliases: /db, /deathbacknow, /wtf
+    trigger:
+        set {_arg_1} to arg-1
+        set {_arg_2} to arg-2
+
+        if {_arg_1} is "back":
+            if {_arg_2} is not set:
+                deatback(sender)
+            else:
+                set {_rt_player} to {_arg_2} parsed as player
+                send "{@prefix} 正在让%{_rt_player}%返回死亡点" to sender
+                send "{@prefix} 你正在返回死亡点 | 操作者 %{_rt_player}%" to {_rt_player}
+                deatback({_rt_player})
+        else if {_arg_1} is "coord":
+            send "%{deathback.%sender's uuid%.lastdeath}%" 
+        
+
+on death:
+    if victim is a player:
+        send actionbar "&c你已死亡，可输入&6/deathback&c返回死亡地点" to victim
+        set {deathback.%victim's uuid%.lastdeath} to location of victim

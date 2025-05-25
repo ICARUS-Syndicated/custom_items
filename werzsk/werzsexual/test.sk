@@ -1,0 +1,4 @@
+
+loop all entities in radius 5 of player:
+    set {_entity} is loop-entity
+send "The Last Nearest Entity %{_entity}%"

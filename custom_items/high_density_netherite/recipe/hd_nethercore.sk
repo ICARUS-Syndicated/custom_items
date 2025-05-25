@@ -1,0 +1,7 @@
+on load:
+    set {_hdnc} to nether star named "&d高密下界核心" with lore "&7充满了下界的力量。" with nbt from "{CustomItem:HDNetheriteCore}"
+    set {_b} to blaze rod
+    set {_hdn} to netherite ingot named "&d高密下界合金" with lore "&7有点沉..." with nbt from "{CustomItem:HDNetheriteIngot}"
+    set {_s} to nether star
+
+    register new shaped recipe for {_hdnc} using {_hdn},{_b},{_hdn},{_b},{_s},{_b},{_hdn},{_b},{_hdn} with id "hd_netherite_core"

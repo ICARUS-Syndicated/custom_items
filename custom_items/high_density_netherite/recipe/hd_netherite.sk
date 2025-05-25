@@ -1,0 +1,25 @@
+on load:
+    set {_rhdn} to netherite scrap named "&d高密下界合金胚" with lore "&7似乎要烧一下才能用。" with nbt from "{CustomItem:HDNetheriteRawIngot}"
+    set {_hdn} to netherite ingot named "&d高密下界合金" with lore "&7有点沉..." with nbt from "{CustomItem:HDNetheriteIngot}"
+    
+    register shapeless recipe:
+        id: "custom:raw_high_density_netherite"
+        result: {_rhdn}
+        ingredients:
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add netherite scrap to ingredients
+            add diamond to ingredients
+            
+    register new furnace recipe:
+        id: "custom:high_density_netherite_ingot"
+        result: {_hdn}
+        input: {_rhdn}
+        cooktime: 2 minutes
+        experience: 20
+        category: "blocks"

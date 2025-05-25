@@ -1,0 +1,5 @@
+on load:
+    set {_axe} to diamond axe named "&d回声战斧" with lore "&7哇袄！" with nbt from "{CustomItem:EchoingAxe}"
+    set {_e} to echo shard
+    set {_d} to diamond named "&d深黯钻石" with lore "&7似乎能听到来自远古的回响" with nbt from "{CustomItem:SculkDiamond}"
+    register new shaped recipe for {_axe} using {_d},{_d},air,{_d},{_e},air,air,{_e},air with id "EchoingAxe"

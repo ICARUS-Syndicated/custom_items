@@ -1,0 +1,119 @@
+on player ready arrow:
+  #检查玩家使用的箭矢
+  if string tag "CustomItem" of nbt of selected bow is "scatterbow":
+    if selected arrow is not {scatterarrow}:
+      send "&4锦簇 &f只能使用 &e花团 &f射击！"
+      cancel event
+
+on shoot:
+  if string tag "CustomItem" of nbt of shooter's tool is "scatterbow":
+    set {_arrownum} to 0
+    set {_shooter} to shooter
+
+    #循环生成一定个数的追踪箭
+    while {_arrownum} <24:
+      send {_arrownum} to shooter
+      
+      summon an arrow at shooter's location
+      set {_arrow} to the last spawned entity
+      add 1 to {_arrownum}
+
+      # send "%{_shooter}% | %{_arrow}%" to {_shooter}
+    
+      # 让箭矢先正常飞行一段时间
+      wait 0.8 second
+
+      # send "Tracking!" to {_shooter}
+    
+      # 确保箭矢仍然存在
+      if {_arrow} is not alive:
+        # send "%{_arrow}% is dead!" to {_shooter}
+        stop
+            
+      # 添加特效显示箭矢已启动追踪模式
+      # display flame particle at location of {_arrow}
+      draw 2 of flame at {_arrow}
+
+      play sound "entity.blaze.shoot" with volume 0.3 at {_arrow}
+    
+      # 开始追踪循环
+      set {_attempts} to 0
+    
+      while {_arrow} is alive:
+        add 1 to {_attempts}
+        if {_attempts} > 30: # 防止无限循环
+          stop
+                
+        # 寻找最近的有效目标
+        set {_target} to {_shooter} # 默认无目标
+            
+        loop all entities in radius {@tracking_radius} around {_arrow}:
+          # 跳过无效目标
+          if loop-entity is {_shooter}:
+            continue
+          if loop-entity is an arrow:
+            continue
+          if loop-entity is a dropped item:
+            continue
+          if loop-entity is an armor stand:
+            continue
+          if loop-entity is an item frame:
+            continue
+          if loop-entity is a painting:
+            continue
+          if loop-entity is a boat:
+            continue
+          if loop-entity is an experience orb:
+            continue
+                    
+          # 设置目标（有敌对生物时优先追踪）
+          if loop-entity is a monster:
+            set {_target} to loop-entity
+            # send "Mosnter" to {_shooter}
+            exit loop # 找到怪物就直接选择
+          if loop-entity is a player:
+            if loop-entity is not {_shooter}:
+              set {_target} to loop-entity
+              # send "player %{_target}%" to {_shooter}
+          if loop-entity is living entity:
+            if loop-entity is not {_shooter}:
+              if {_target} is {_shooter}: # 仅当尚未找到任何目标时
+                set {_target} to loop-entity
+                # send "Living %{_target}%" to {_shooter}
+
+        # 如果找到有效目标，进行追踪
+        if {_target} is not {_shooter}:
+          # send "Available" to {_shooter}
+          # 获取目标位置（稍微瞄准头部提高命中率）
+          set {_target_loc} to location of {_target}
+          set y-coordinate of {_target_loc} to (y-coordinate of {_target_loc}) + 1.5
+                
+          # 计算方向向量
+          set {_direction} to vector from location of {_arrow} to {_target_loc}
+                
+          # 调整箭矢速度和方向
+          set velocity of {_arrow} to {_direction} normalized * {@arrow_speed}
+                
+          # 追加一点提前量以应对移动目标
+          set {_target_vel} to velocity of {_target}
+          if vector length of {_target_vel} > 0.1:
+            set velocity of {_arrow} to (velocity of {_arrow}) + ({_target_vel} * 0.2)
+                
+          # 特效显示箭矢在追踪
+          # display flame particle at location of {_arrow}
+          draw 2 of flame at {_arrow}
+            
+        # 短暂等待后继续更新
+        wait 2 ticks
+
+command /scatterbow:
+  permission: werzutils.scatterbow
+  permission message: &c你没有权限使用这个命令喵
+  trigger:
+    give player bow named "&4锦簇" with lore "&cIt is blooming" with nbt from "{CustomItem:scatterbow}"
+
+command /scatterarrow:
+  permission: werzutils.scatterarrow
+  permission message: &c你没有权限使用这个命令喵
+  trigger:
+    give player arrow named "&e花团" with lore "&cIt is blooming" with nbt from "{CustomItem:scatterarrow}"

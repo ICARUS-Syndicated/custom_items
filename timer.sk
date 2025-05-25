@@ -1,0 +1,62 @@
+on load:
+    set {bar} to boss bar with id "timer" with title "eee" with color green with progress 100
+    add all players to {bar}
+
+on join:
+    send "+"
+    add all players to {bar}
+
+command /timerSetup <number>:
+    permission: sb.timer
+    trigger:
+        # set {timer} to true
+        if {timer} = true:
+            send "&c现有计时器还没有停止"
+            stop trigger
+        set {time} to arg-1
+        # 
+        
+        set bar title of {bar} to "&b总时间：%{time}%s"
+        set bar progress of {bar} to 100
+        set bar color of {bar} to green
+
+command /timerStart:
+    permission: sb.timer
+    trigger:
+        set {timer} to true
+        set {startTime} to unix timestamp of now
+        #set {time} to arg-1
+        #set {startTime} to unix timestamp of now
+        #set {bar} to boss bar with id "timer" with title "剩余时间" with color green with progress 100
+        #add all players to {bar}
+
+command /timerStop:
+    permission: sb.timer
+    trigger:
+        set {timer} to false
+        delete {time}
+        delete {startTime}
+        set bar title of {bar} to "&cSTOP===%bar title of {bar}%&c===STOP"
+        set bar color of {bar} to red
+
+every tick:
+    {timer} = true
+    set {_timeNow} to unix timestamp of now
+    set {_timeLeft} to {time} - ({_timeNow} - {startTime})
+    set bar progress of {bar} to 100 - (({_timeNow} - {startTime})/{time}) * 100
+    
+    if {_timeLeft} <= 10:
+        set bar title of {bar} to "&c剩余时间：%{_timeLeft}%/%{time}%s"
+    else if {_timeLeft} <= 60:
+        set bar title of {bar} to "&c剩余时间：%round({_timeLeft})%/%{time}%s"
+    else if {_timeLeft} <= 5 * 60:
+        set bar title of {bar} to "&e剩余时间：%round({_timeLeft}/60)%/%round({time}/60)%min"
+    else:
+        set bar title of {bar} to "&a剩余时间：%round({_timeLeft}/60)%/%round({time}/60)%min"
+
+    if {_timeNow} - {startTime} >= {time}:
+        set bar title of {bar} to "&cTime is over!"
+        set bar color of {bar} to red
+        set {timer} to false
+        broadcast "%{time}%s计时器结束！"
+     

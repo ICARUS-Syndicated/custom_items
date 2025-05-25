@@ -1,0 +1,9 @@
+on right click with netherite pickaxe:
+    if nbt of player's tool has tag "CustomItem":
+        set {_ItemName} to string tag "CustomItem" of nbt of player's tool
+        if {_ItemName} is "DragonPickaxe":
+            if {dragonite_pickaxe.cooldown.%player%} is not set:
+                set {dragonite_pickaxe.cooldown.%player%} to true
+                apply haste potion of tier 10 whilst hiding the potion icon to the player for 10 second
+                wait 30 second
+            delete {dragonite_pickaxe.cooldown.%player%}

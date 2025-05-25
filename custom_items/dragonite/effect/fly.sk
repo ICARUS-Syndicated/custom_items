@@ -1,0 +1,36 @@
+command /effect:flying <player> <integer=5>:
+    usage: 修改玩家的飞行计时器
+    executable by: console
+    trigger:
+        if arg-2 < 1:
+            send "&c无效的时间！"
+        if arg-2 < {fly::%arg-1%}: 
+            stop
+        else:
+            set {fly::%arg-1%} to arg-2
+            make arg-1 fly
+
+on join:
+    if player can fly:
+        make player stop flying
+    set {fly::%player%} to 0
+    set {fly::%player%.warning} to true
+
+on quit:
+    delete {fly::%player%}
+    delete {fly::%player%.warning}
+
+every second:
+    loop all players:
+        if {fly::%loop-player%} > 0:
+            subtract 1 from {fly::%loop-player%}
+            if {fly::%loop-player%} <= 0:
+                make loop-player stop flying
+                send "&c你坠机了！" to loop-player
+                set {fly::%loop-player%} to 0
+            else if {fly::%loop-player%} = 5:
+                if {fly::%loop-player%.warning} is true:
+                    send "&c你还有五秒就要坠机了！" to loop-player
+                    set {fly::%loop-player%.warning} to false
+            else: 
+                set {fly::%loop-player%.warning} to true

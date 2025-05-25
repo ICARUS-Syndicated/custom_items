@@ -1,0 +1,19 @@
+every 4 seconds:
+    loop all players:
+        set {_h} to the helmet slot of loop-player
+        set {_c} to the chestplate slot of loop-player
+        set {_l} to the leggings slot of loop-player
+        set {_b} to the boots slot of loop-player
+        nbt of {_h} has tag "CustomItem"
+        nbt of {_c} has tag "CustomItem"
+        nbt of {_l} has tag "CustomItem"
+        nbt of {_b} has tag "CustomItem"
+        set {_ht} to string tag "CustomItem" of nbt of {_h}
+        set {_ct} to string tag "CustomItem" of nbt of {_c}
+        set {_lt} to string tag "CustomItem" of nbt of {_l}
+        set {_bt} to string tag "CustomItem" of nbt of {_b}
+        {_ht} is "DragonHelmet"
+        {_ct} is "DragonChestplate"
+        {_lt} is "DragonLeggings"
+        {_bt} is "DragonBoots"
+        execute console command "/effect:flying %loop-player%"

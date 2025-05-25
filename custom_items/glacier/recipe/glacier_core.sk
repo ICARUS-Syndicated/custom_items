@@ -1,0 +1,10 @@
+on load:
+    set {_fullglaciercore} to heart of the sea with name "&e冰川核心" with lore "&7冰川的力量。" with nbt from "{CustomItem:GlacierCore}"
+    set {_glaciercore} to heart of the sea named "&e破损的寒冷核心" with lore "&7拿在手上怪冻人的。" with nbt from "{CustomItem:BrokenGlacierCore}" 
+    register new shaped recipe:
+        id: "custom:glacier_core"
+        result: {_fullglaciercore}
+        shape: "bbb","bab","bbb"
+        ingredients:
+            set ingredient of "a" to {_glaciercore}
+            set ingredient of "b" to blue ice

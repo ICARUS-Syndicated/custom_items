@@ -1,0 +1,5 @@
+command /getDragonDrops:
+    trigger:
+        if player is an op:
+            give player 6 amethyst shards named "&e龙鳞" with lore "&7来自末地的龙鳞" with nbt from "{CustomItem:DragonScale}"
+            give player 4 echo shards named "&e终末结晶" with lore "&7终末的能量精华" with nbt from "{CustomItem:EndEnergy}"

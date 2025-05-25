@@ -1,0 +1,15 @@
+on damage:
+    victim is a player
+    attacker's tool is leash
+    getMasterOf(victim) = attacker
+    #make attacker say "%victim's name%, go work!"
+    #apply effect swiftness of tier 1 to victim for 10 seconds
+    #apply effect haste of tier 1 to victim
+    apply potion of haste 5 to victim for 10 seconds
+    apply potion of swiftness 3 to victim for 10 seconds
+
+on death:
+    victim is a player
+    attacker's tool is leash
+    getMasterOf(victim) = attacker
+    event.setDeathMessage("%victim% 被他的主人 %attacker% 用皮鞭抽死了")

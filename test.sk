@@ -1,0 +1,4 @@
+on load:
+  set {_qw} to enchanted book with nbt from "{StoredEnchantments:[{id:'minecraft:mending',lvl:1}]}"
+  set {_l} to leather
+  register new shaped recipe for {_qw} using {_l},{_l},{_l},{_l},{_l},{_l},{_l},{_l},{_l} with id "mendingbook"

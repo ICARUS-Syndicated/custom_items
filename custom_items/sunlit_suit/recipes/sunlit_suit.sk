@@ -1,0 +1,51 @@
+on right click:
+    set {_t} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "CoroniteHelmet"
+        nbt of {_t} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_t} is "SunlitTemplate"
+    then:
+        set {_result} to diamond helmet named "&d日耀战盔" with lore "&7来自太阳的力量" with nbt from "{CustomItem:SunlitHelmet}"
+        play sound "block.anvil.use"
+        set slot 40 of player to air
+        set player's tool to {_result}
+          
+on right click:
+    set {_t} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "CoroniteChestplate"
+        nbt of {_t} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_t} is "SunlitTemplate"
+    then:
+        set {_result} to diamond chestplate named "&d日耀胸甲" with lore "&7来自太阳的力量" with nbt from "{CustomItem:SunlitChestplate}"
+        play sound "block.anvil.use"
+        set slot 40 of player to air
+        set player's tool to {_result}
+
+on right click:
+    set {_t} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "CoroniteLeggings"
+        nbt of {_t} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_t} is "SunlitTemplate"
+    then:
+        set {_result} to diamond leggings named "&d日耀护膝" with lore "&7来自太阳的力量" with nbt from "{CustomItem:SunlitLeggings}"
+        play sound "block.anvil.use"
+        set slot 40 of player to air
+        set player's tool to {_result}
+
+on right click:
+    set {_t} to slot 40 of player
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "CoroniteBoots"
+        nbt of {_t} has tag "CustomItem"
+        string tag "CustomItem" of nbt of {_t} is "SunlitTemplate"
+    then:
+        set {_result} to diamond boots named "&d日耀护膝" with lore "&7来自太阳的力量" with nbt from "{CustomItem:SunlitBoots}"
+        play sound "block.anvil.use"
+        set slot 40 of player to air
+        set player's tool to {_result}

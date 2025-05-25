@@ -1,0 +1,63 @@
+on load:
+    set {normal_vibrator} to lightning rod named "&f&lVibrator &a(Normal) &c(3.5cm x 1.0m)" with lore "&7werstick-the most powerful arrow"
+
+function set_struct(player: player, target: player):
+    send "Start Vibration: %{_target}% hit by %{_player}%" to {_player}
+
+    set {_x} to x-coordinate of {_target}
+    set {_y} to y-coordinate of {_target}
+    set {_z} to z-coordinate of {_target}
+    set {_w} to world of {_target}
+
+    # Obsidian
+    set block at location {_x}, {_y}-1, {_z} in {_w} to obsidian
+
+    # 活塞
+    set block at location {_x}+2, {_y}, {_z} in {_w} to sticky piston
+
+    # 末地烛
+    set block at location {_x}+1, {_y}, {_z} in {_w} to lightning rod
+
+    # 
+    set block at location {_x}+2, {_y}+1, {_z} in {_w} to observer
+    set block at location {_x}+2, {_y}+2, {_z} in {_w} to observer
+
+
+on right click:
+    if player's tool is {normal_vibrator}:
+        type of player's target is the player
+
+        set_struct(player, player's target)
+
+
+
+command /werzvibrator:
+    permission: werzutils.vibrator
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        give player {normal_vibrator}
+
+
+
+command /werzsex [<string>]:
+    permission: werzutils.vibrator
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        set {_playername} to arg-1
+        
+        if {_playername} is not set:
+            send "None player selected!" to sender
+        else:
+            loop every ticks:
+                set {_bottom_player} to {_playername} parsed as player
+                set {_top_player} to sender
+
+                set {_top_player_location} to {_top_player}'s location
+                set {_bottom_player_location} to {_bottom_player}'s location
+
+                set yaw of {_bottom_player_location} to yaw of {_top_player_location}
+                set pitch of {_bottom_player_location} to pitch of {_top_player_location}
+
+                teleport {_bottom_player} to {_bottom_player_location}
+
+                wait 2 ticks

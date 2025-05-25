@@ -1,0 +1,14 @@
+import:
+    java.util.UUID
+    org.bukkit.Bukkit
+
+every tick:
+    #debug("requestTimer: %(unix timestamp of now - loop-value%")
+    
+    loop {BlackFriendRequestTimer::*}:
+        debug("[%unix timestamp of now%] | requestTimer: %(unix timestamp of now) - loop-value%")
+        if (unix timestamp of now) - loop-value >= 60:
+            send "&c邀请超时！" to Bukkit.getPlayer(UUID.fromString(loop-index))
+            send "&c邀请超时！" to Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%loop-index%}))
+            delete {BlackFriendRequest::%loop-index%}
+            delete {BlackFriendRequestTimer::%loop-index%}

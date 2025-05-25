@@ -1,0 +1,20 @@
+command /effect:quickequip <player>:
+    usage: equip the player by diamonds
+    executable by: console
+    trigger:
+        if helmet of arg-1 is air:
+            set {_helmet} to diamond helmet 
+            enchant {_helmet} with protection 2
+            set helmet of arg-1 to {_helmet}
+        if chestplate of arg-1 is air:
+            set {_chestplate} to diamond chestplate
+            enchant {_chestplate} with protection 2
+            set chestplate of arg-1 to {_chestplate}
+        if leggings of arg-1 is air:
+            set {_leggings} to diamond leggings
+            enchant {_leggings} with protection 2
+            set leggings of arg-1 to {_leggings}
+        if boots of arg-1 is air:
+            set {_boots} to diamond boots
+            enchant {_boots} with protection 2
+            set boots of arg-1 to {_boots}

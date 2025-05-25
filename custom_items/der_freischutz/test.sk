@@ -1,0 +1,4 @@
+command /DerFreischutz <player>:
+    trigger:
+        set {_l} to diamond hoe with nbt from "{CustomItem:DerFreischutz}"
+        give or drop {_l} to player

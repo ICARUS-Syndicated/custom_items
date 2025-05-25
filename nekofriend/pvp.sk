@@ -1,0 +1,27 @@
+on join:
+    {pvpStatus::%player's uuid%} is set
+    set {pvpStatus::%player's uuid%} to false
+
+on damage:
+    victim is a player
+    attacker is a player
+    getMasterOf(victim) != attacker
+    if {pvpStatus::%victim's uuid%} is false:
+        if victim is attacker:
+            send "&a不要自残力qwq" to attacker
+        else:
+            cancel event
+            send "&c对方关闭了 PVP" to attacker
+    else:
+        if {pvpStatus::%attacker's uuid%} is false:
+            cancel event
+            send "&c你关闭了 PVP" to attacker
+command /pvp:
+    trigger:
+        sender is a player
+        if {pvpStatus::%sender's uuid%} is false:
+            send "pvp设为 &a开"
+            set {pvpStatus::%sender's uuid%} to true
+        else:
+            send "pvp设为 &c关"
+            set {pvpStatus::%sender's uuid%} to false

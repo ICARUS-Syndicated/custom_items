@@ -1,0 +1,29 @@
+on sprint toggle:
+    if all:
+        nbt of player's helmet has tag "CustomItem"
+        nbt of player's chestplate has tag "CustomItem"
+        nbt of player's leggings has tag "CustomItem"
+        nbt of player's boots has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's helmet is "SunlitHelmet"
+        string tag "CustomItem" of nbt of player's chestplate is "SunlitChestplate"
+        string tag "CustomItem" of nbt of player's leggings is "SunlitLeggings"
+        string tag "CustomItem" of nbt of player's boots is "SunlitBoots"
+    then:
+        cancel event
+        if all:
+            player is not sprinting
+            block under player is not air
+            {sprint::%player%.cooldown} is not set
+        then:
+            set {sprint::%player%.cooldown} to 1
+            set {_v} to vector in direction of player
+            set {_v} to {_v}*1.25
+            add {_v} to velocity of player 
+            set {_steps} to 125  # 控制粒子密度
+            loop {_steps} times:
+                set {_currentDistance} to loop-value
+                set {_l} to location {_currentDistance} meters behind player's eyes
+                make 1 of flame at {_l}
+
+            wait 0.2 seconds
+            delete {sprint::%player%.cooldown}

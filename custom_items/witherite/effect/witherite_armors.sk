@@ -1,0 +1,41 @@
+every tick:
+    loop all players:
+        if all:
+            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteHelmet}"
+            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteChestplate}"
+            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteLeggings}"
+            # loop-player is wearing netherite helmet contains nbt from "{CustomItem:WitheriteBoots}"
+            nbt of loop-player's helmet has tag "CustomItem"
+            nbt of loop-player's chestplate has tag "CustomItem"
+            nbt of loop-player's leggings has tag "CustomItem"
+            nbt of loop-player's boots has tag "CustomItem"
+            string tag "CustomItem" of nbt of loop-player's helmet is "WitheriteHelmet"
+            string tag "CustomItem" of nbt of loop-player's chestplate is "WitheriteChestplate"
+            string tag "CustomItem" of nbt of loop-player's leggings is "WitheriteLeggings"
+            string tag "CustomItem" of nbt of loop-player's boots is "WitheriteBoots"
+        then:
+            remove wither from the loop-player
+            loop blocks in radius 1 around the loop-player:
+                if loop-block is sand or red sand:
+                    set loop-block to soul sand
+                else if loop-block is grass block or dirt or coarse dirt or podzol:
+                    set loop-block to soul soil
+
+on damage:
+    if all:
+        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteHelmet}"
+        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteChestplate}"
+        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteLeggings}"
+        # victim is wearing netherite helmet contains nbt from "{CustomItem:WitheriteBoots}"
+        nbt of victim's helmet has tag "CustomItem"
+        nbt of victim's chestplate has tag "CustomItem"
+        nbt of victim's leggings has tag "CustomItem"
+        nbt of victim's boots has tag "CustomItem"
+        string tag "CustomItem" of nbt of victim's helmet is "WitheriteHelmet"
+        string tag "CustomItem" of nbt of victim's chestplate is "WitheriteChestplate"
+        string tag "CustomItem" of nbt of victim's leggings is "WitheriteLeggings"
+        string tag "CustomItem" of nbt of victim's boots is "WitheriteBoots"
+        damage cause is projectile,explosion,fireball or wither
+    then:
+        cancel event
+            

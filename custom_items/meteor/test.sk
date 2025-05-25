@@ -1,0 +1,5 @@
+command /meteor <player>:
+    permission: op
+    trigger:
+        set {_l} to bow with nbt from "{CustomItem:Meteor}"
+        give or drop {_l} to player

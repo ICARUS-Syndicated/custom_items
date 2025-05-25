@@ -1,0 +1,32 @@
+every tick:
+    loop all players:
+        if all:
+            nbt of loop-player's helmet has tag "CustomItem"
+            nbt of loop-player's chestplate has tag "CustomItem"
+            nbt of loop-player's leggings has tag "CustomItem"
+            nbt of loop-player's boots has tag "CustomItem"
+            string tag "CustomItem" of nbt of loop-player's helmet is "GlacierHelmet"
+            string tag "CustomItem" of nbt of loop-player's chestplate is "GlacierChestplate"
+            string tag "CustomItem" of nbt of loop-player's leggings is "GlacierLeggings"
+            string tag "CustomItem" of nbt of loop-player's boots is "GlacierBoots"
+        then:
+            loop blocks in radius 1 around the loop-player:
+                if loop-block is water:
+                    set loop-block to ice
+                else if loop-block is lava:
+                    set loop-block to obsidian
+
+on damage:
+    if all:
+        nbt of victim's helmet has tag "CustomItem"
+        nbt of victim's chestplate has tag "CustomItem"
+        nbt of victim's leggings has tag "CustomItem"
+        nbt of victim's boots has tag "CustomItem"
+        string tag "CustomItem" of nbt of victim's helmet is "GlacierHelmet"
+        string tag "CustomItem" of nbt of victim's chestplate is "GlacierChestplate"
+        string tag "CustomItem" of nbt of victim's leggings is "GlacierLeggings"
+        string tag "CustomItem" of nbt of victim's boots is "GlacierBoots"
+        damage cause is freeze
+    then:
+        heal victim by damage
+            

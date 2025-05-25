@@ -1,0 +1,11 @@
+on load:
+    set {_h} to netherite helmet named "&d龙化头盔" with lore "&7来自终末的视力" with nbt from "{CustomItem:DragonHelmet}"
+    set {_c} to netherite chestplate named "&d龙化胸甲" with lore "&7来自终末的活力" with nbt from "{CustomItem:DragonChestplate}"
+    set {_l} to netherite leggings named "&d龙化护腿" with lore "&7来自终末的速度" with nbt from "{CustomItem:DragonLeggings}"
+    set {_b} to netherite boots named "&d龙化鞋子" with lore "&7来自终末的醇香" with nbt from "{CustomItem:DragonBoots}"
+    set {_e} to echo shard named "&e终末结晶" with lore "&7终末的能量精华" with nbt from "{CustomItem:EndEnergy}"
+    set {_d} to amethyst shard named "&e龙鳞" with lore "&7来自末地的龙鳞" with nbt from "{CustomItem:DragonScale}"
+    register new shaped recipe for {_h} using {_e},{_d},{_e},{_d},netherite helmet,{_d},{_e},{_d},{_e} with id "dragonite_helmet"
+    register new shaped recipe for {_c} using {_e},{_d},{_e},{_d},netherite chestplate,{_d},{_e},{_d},{_e} with id "dragonite_chestplate"
+    register new shaped recipe for {_l} using {_e},{_d},{_e},{_d},netherite leggings,{_d},{_e},{_d},{_e} with id "dragonite_leggings"
+    register new shaped recipe for {_b} using {_e},{_d},{_e},{_d},netherite boots,{_d},{_e},{_d},{_e} with id "dragonite_boots"

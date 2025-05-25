@@ -1,0 +1,4 @@
+on load:
+    set {_boots} to diamond boots named "&d回响战靴" with lore "&7哇袄！" with nbt from "{CustomItem:EchoingBoots}"
+    set {_d} to diamond named "&d深黯钻石" with lore "&7似乎能听到来自远古的回响" with nbt from "{CustomItem:SculkDiamond}"
+    register new shaped recipe for {_boots} using air,air,air,{_d},air,{_d},{_d},air,{_d} with id "EchoingBoots"

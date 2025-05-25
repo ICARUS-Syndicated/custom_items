@@ -1,0 +1,15 @@
+on load:
+    set {_bp} to leather named "&f快捷背包" with lore "&7右键以打开快捷背包","潜行右键绑定容器" with nbt from "{CustomModelData:1,CustomItem:Quickbp}"
+    set {_e} to leather
+    set {_d} to stick
+    register new shaped recipe for {_bp} using {_e},{_e},{_e},{_e},{_d},{_e},{_e},{_e},{_e} with id "quick_backpack"
+
+on right click with leather:
+    if nbt of player's tool has tag "CustomItem":
+        set {_ItemName} to string tag "CustomItem" of nbt of player's tool
+        if {_ItemName} is "Quickbp":
+            if player is sneaking:
+                make player execute command "/bpm bind 1"
+                stop
+            else:
+                make player execute command "/bp"

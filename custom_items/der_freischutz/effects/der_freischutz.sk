@@ -1,0 +1,57 @@
+options:
+    magic_bullet_cooldown: 12
+
+on right click with diamond hoe:
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "DerFreischutz"
+    then:
+        magicbulletAttack(player)
+
+function magicbulletAttack(p: Player):
+    if {magic_bullet_cooldown::%{_p}'s uuid%} is set:
+        if difference between now and {magic_bullet_cooldown::%{_p}'s uuid%} is less than {@magic_bullet_cooldown} second:
+            play sound "block.chain.place" with volume 0.5 at {_p}
+            send action bar "&c射击冷却中! 请等待 %difference between {@magic_bullet_cooldown} second and (difference between now and {magic_bullet_cooldown::%{_p}'s uuid%})%" to {_p}
+            stop
+    set {magic_bullet_cooldown::%{_p}'s uuid%} to now
+
+    play sound "entity.tnt.primed" with volume 1 at {_p}
+    
+    # 创建更短的充能动画效果
+    set {_chargeTime} to 0
+    while {_chargeTime} < 2:
+        add 1 to {_chargeTime}
+        # 充能期间的粒子效果
+        draw 12 of electric_spark at {_p} with extra 0.3
+        draw 2 of dust using dustOption(blue, 3) at {_p} with extra 0.3
+        wait 1 tick
+    # 创建瞬时激光效果
+    set {_maxDistance} to 128
+    set {_loc} to {_p}'s eyes location
+
+    # 使用循环快速绘制整条激光路径
+    loop 512 times:
+        set {_progress} to loop-number / 128
+        set {_currentDistance} to {_progress} * {_maxDistance}
+        set {_l} to location {_currentDistance} meters in front of {_p}'s eyes
+        
+        # 使用更密集的粒子效果模拟激光
+        draw 6 of enchant at {_l} with extra 0.3
+        draw 2 of dust using dustOption(blue, 3) at {_l} with extra 0.3
+        draw 1 of dust using dustOption(black, 3) at {_l} with extra 0.3
+        
+        set {_radius} to 2.5
+
+        # 检测每一点周围范围内的实体
+        loop all entities in radius {_radius} of {_l}:
+            set {_entity} to loop-entities
+            # 确保不是玩家自己且尚未被命中
+            if {_entity} is not {_p}:
+                damage {_entity} by 11 with fake cause wither
+                play sound "block.glass.hit" with volume 1.2 at {_entity}
+                draw 2 of dust using dustOption(blue, 3) at {_p} with extra 0.3
+
+    play sound "block.conduit.activate" with volume 0.5 at {_p}
+        
+        

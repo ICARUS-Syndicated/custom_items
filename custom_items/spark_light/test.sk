@@ -1,0 +1,4 @@
+command /SparkLight <player>:
+    trigger:
+        set {_l} to golden sword with nbt from "{CustomItem:SparkLight}"
+        give or drop {_l} to player

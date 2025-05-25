@@ -1,0 +1,10 @@
+command /kit_echoingaxe:
+    permission: warden.stick
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        set {_axe} to diamond axe named "&d回声战斧" with lore "&7哇袄！" with nbt from "{CustomItem:EchoingAxe}"
+        set {_boots} to diamond boots named "&d回响战靴" with lore "&7哇袄！" with nbt from "{CustomItem:EchoingBoots}"
+        set {_chestplate} to diamond chestplate named "&d回响胸甲" with lore "&7哇袄！" with nbt from "{CustomItem:EchoingChestplate}"
+        give player {_axe}
+        give player {_boots}
+        give player {_chestplate}

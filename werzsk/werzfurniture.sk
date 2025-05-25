@@ -1,0 +1,99 @@
+# 高速熔炉脚本
+# 文件名: highspeedfurnace.sk
+
+# 定义选项
+options:
+    prefix: &8[&c高速熔炉&8]
+    burnSpeed: 5 # 燃烧速度倍数，越高越快
+
+# 脚本加载成功提示
+on skript load:
+    send "&a高速熔炉脚本已成功加载！" to console
+
+# 创建高速熔炉
+command /highfurnace [<text>] [<number>]:
+    permission: highfurnace.use
+    permission message: {@prefix} &c你没有权限使用此命令！
+    usage: {@prefix} &c用法: /highfurnace give [速度倍数]
+    trigger:
+        if arg-1 is "give":
+            if arg-2 is set:
+                set {_speed} to arg-2
+            else:
+                set {_speed} to {@burnSpeed}
+            
+            give player 1 furnace named "&c高速熔炉 &8[&e{_speed}x&8]" with lore "&7燃烧速度: &e{_speed}倍" and "&7右键放置使用"
+            add "{HighSpeedFurnace:{Speed:%{_speed}%}}" to nbt of player's tool
+            send "{@prefix} &a你获得了一个 &e{_speed}倍速 &a的高速熔炉！"
+
+# 记录放置的高速熔炉
+on place of furnace:
+    if name of player's tool contains "高速熔炉":
+        set {_nbt} to nbt of player's tool
+        set {_speed} to tag "HighSpeedFurnace;Speed" of {_nbt} parsed as number
+        if {_speed} is not set:
+            set {_speed} to {@burnSpeed}
+        
+        set {highfurnace::%location of event-block%} to {_speed}
+        send "{@prefix} &a高速熔炉已放置！燃烧速度: &e{_speed}倍"
+
+# 移除被破坏的高速熔炉
+on break of furnace:
+    if {highfurnace::%location of event-block%} is set:
+        set {_speed} to {highfurnace::%location of event-block%}
+        delete {highfurnace::%location of event-block%}
+        
+        cancel event
+        set block at location of event-block to air
+        drop 1 furnace named "&c高速熔炉 &8[&e{_speed}x&8]" with lore "&7燃烧速度: &e{_speed}倍" and "&7右键放置使用" at location of event-block
+        add "{HighSpeedFurnace:{Speed:%{_speed}%}}" to nbt of last dropped item
+
+# 加速燃烧过程
+every 5 ticks:
+    loop {highfurnace::*}:
+        set {_loc} to loop-index parsed as location
+        set {_speed} to loop-value
+        
+        set {_block} to block at {_loc}
+        if {_block} is furnace:
+            if {_block} is lit:
+                set {_inv} to inventory of block at {_loc}
+                
+                # 检查是否有物品正在烧炼
+                if slot 0 of {_inv} is not air:
+                    if slot 1 of {_inv} is not air:
+                        # 获取当前烧炼时间
+                        set {_furnaceData} to nbt of block at {_loc}
+                        set {_currentCookTime} to tag "CookTime" of {_furnaceData} parsed as number
+                        set {_totalCookTime} to tag "CookTimeTotal" of {_furnaceData} parsed as number
+                        
+                        if {_currentCookTime} is set:
+                            # 加速烧炼进度
+                            add ({_speed} - 1) to {_currentCookTime}
+                            
+                            # 防止溢出
+                            if {_currentCookTime} >= {_totalCookTime}:
+                                set {_currentCookTime} to {_totalCookTime} - 1
+                            
+                            # 更新烧炼时间
+                            add "{CookTime:%{_currentCookTime}%}" to nbt of block at {_loc}
+                            
+                            # 添加视觉效果
+                            if chance of 20%:
+                                play sound "block.furnace.fire_crackle" at {_loc} with volume 0.5 with pitch {_speed} * 0.2 + 0.8
+                                spawn flame particle at {_loc} with offset 0.2, 0.4, 0.2 with extra 0.01 * {_speed}
+
+# 为高速熔炉添加特殊GUI标识
+on inventory open:
+    if {highfurnace::%location of event-inventory%} is set:
+        set {_speed} to {highfurnace::%location of event-inventory%}
+        wait 1 tick
+        set name of event-inventory to "&c高速熔炉 &8[&e{_speed}x&8]"
+
+# 掉落物品时保持NBT数据
+on drop of furnace:
+    if name of event-item contains "高速熔炉":
+        set {_speed} to {_speed} parsed as number from ".*\[&e(.*)x&8\].*" in name of event-item
+        if {_speed} is not set:
+            set {_speed} to {@burnSpeed}
+        add "{HighSpeedFurnace:{Speed:%{_speed}%}}" to nbt of event-item

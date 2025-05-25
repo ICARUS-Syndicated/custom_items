@@ -1,0 +1,14 @@
+on death of blaze:
+    drop 2 blaze rod
+    set {_r} to random integer between 1 and 100
+    if all:
+        {_r} < 10
+        attacker is a player
+    then:
+        if all:
+            nbt of attacker's tool has tag "CustomItem"
+            string tag "CustomItem" of nbt of attacker's tool is "CoroniteBlade"
+        then:
+            drop 1 magma cream named "&o活化的烈焰人核心" with lore "&7高温加热使得离体的烈焰人核心恢复了活性" with nbt from "{CustomItem:ActivatedBlazeCore}"
+        else:
+            drop 1 magma cream named "失活的烈焰人核心" with lore "&7低温使它失去了原有的作用..." with nbt from "{CustomItem:InactiveBlazeCore}"

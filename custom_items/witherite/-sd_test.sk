@@ -1,0 +1,24 @@
+command /witherite:
+    permission: witherite.what_the_fuck
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        set {_wth_s} to netherite sword named "&d凋零剑" with lore "&7凋零。" with nbt from "{CustomItem:WitheriteSword}"
+        enchant {_wth_s} with sharpness 7
+        give player {_wth_s}
+
+        set {_wth_b} to netherite boots named "&d凋零靴子" with lore "&7终结。" with nbt from "{CustomItem:WitheriteBoots}"
+        enchant {_wth_b} with protection 7
+        give player {_wth_b}
+
+        set {_wth_l} to netherite leggings named "&d凋零护腿" with lore "&7终结。" with nbt from "{CustomItem:WitheriteLeggings}"
+        enchant {_wth_l} with protection 7
+        give player {_wth_l}
+
+        set {_wth_c} to netherite chestplate named "&d凋零胸甲" with lore "&7终结。" with nbt from "{CustomItem:WitheriteChestplate}"
+        enchant {_wth_c} with protection 7
+        give player {_wth_c}
+
+        set {_wth_h} to netherite helmet named "&d凋零头盔" with lore "&7终结。" with nbt from "{CustomItem:WitheriteHelmet}"
+        enchant {_wth_h} with protection 7
+        give player {_wth_h}
+        

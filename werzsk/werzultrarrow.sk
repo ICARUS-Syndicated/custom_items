@@ -1,0 +1,27 @@
+on load:
+    set {werzarrow} to arrow named "&bwerzstick:arrow:debug" with lore "&7werstick-the most powerful arrow"
+    enchant {werzarrow} with sharpness 1
+
+on right click:
+    if player's tool is {werzarrow}:
+        loop 80 times:
+            summon an arrow at player's location
+            set {_arrow} to spawned entity
+            shoot {_arrow} from player with speed 4
+            # loop all entities in radius 2 of {_arrow}:
+            #     set {_entity} to loop-entities
+            #     if {_entity} is arrow:
+            #         kill {_entity}
+
+command /werzarrow:
+    permission: werzutils.werzultrarrow
+    permission message: &c你没有权限使用这个命令!
+    trigger:
+        give player {werzarrow}
+
+on death:
+    if all:
+        victim is a player
+        attacker's tool is {werzarrow}
+    then:
+        event.setDeathMessage("%victim% 被 %attacker% 用&6神权&r炒烂了")

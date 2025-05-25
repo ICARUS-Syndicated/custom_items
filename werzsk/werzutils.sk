@@ -1,0 +1,83 @@
+options:
+    prefix: &8[&6WerzUtils&8]&r
+
+command /pretend [<text>]:
+    permission: werzutils.pretend
+    permission message: &c抱歉,你没有权限使用该命令!
+    trigger:
+        set {_username} to arg-1
+        make sender execute command "nickname %sender% %{_username}%"
+        make sender execute command "skin set %{_username}%"
+        send "{@prefix}&a你正在伪装: %{_username}%"
+# on enchant:
+#     if the clicked button is 1:
+#         
+
+command /test [<text>]:
+    permission: werzutils.test
+    permission message: &c抱歉,你没有权限使用该命令!
+    trigger:
+        give player book named "&6&lSuper Enchanting Book" with lore "&6神秘的超级附魔书" with nbt from "{CustomItem:SuperTableBook}"
+
+command /saturn [<text>]:
+    permission: werzutils.saturn
+    permission message: &c抱歉,你没有权限使用该命令!
+    trigger:
+        set {_player} to arg-1 parsed as player
+
+        if {_player} is not set:
+            set {_player} to sender
+
+        if {werzutils.%{_player}'s uuid%.saturn} is not set:
+            set {werzutils.%{_player}'s uuid%.saturn} to true
+            
+        if {werzutils.%{_player}'s uuid%.saturn} is true:
+            apply potion of saturation to {_player} for 10000000 seconds
+            set {_player}'s saturation to 20
+            set {_player}'s food level to 20
+            send "{@prefix} Saturned!" to {_player}
+            send "{@prefix} Saturned! to %{_player}%" to sender
+            set {werzutils.%{_player}'s uuid%.saturn} to false
+        else:
+            remove saturation from {_player}
+            set {_player}'s saturation to 5
+            send "{@prefix} Unsaturned!" to {_player}
+            send "{@prefix} Unsaturned! to %{_player}%" to sender
+            set {werzutils.%{_player}'s uuid%.saturn} to true
+        stop
+command /ironlung [<text>]:
+    permission: werzutils.saturn
+    permission message: &c抱歉,你没有权限使用该命令!
+    trigger:
+        set {_player} to arg-1 parsed as player
+
+        if {_player} is not set:
+            set {_player} to sender
+
+        if {werzutils.%{_player}'s uuid%.saturn} is not set:
+            set {werzutils.%{_player}'s uuid%.saturn} to true
+            
+        if {werzutils.%{_player}'s uuid%.saturn} is true:
+            apply potion of water breathing to {_player} for 10000000 seconds
+            send "{@prefix} Iron Lung!" to {_player}
+            send "{@prefix} Iron Lung! to %{_player}%" to sender
+            set {werzutils.%{_player}'s uuid%.saturn} to false
+        else:
+            remove water breathing from {_player}
+            send "{@prefix} Uniron Lung!" to {_player}
+            send "{@prefix} Uniron Lung! to %{_player}%" to sender
+            set {werzutils.%{_player}'s uuid%.saturn} to true
+        stop
+
+on tab complete of "/saturn" and "/ironlung":
+    set tab completions for position 1 to all players
+
+on enchant:
+    if nbt of player's tool has tag "CustomItem":
+        string tag "CustomItem" of nbt of player's tool is "SuperTableBook"
+        send "&6 超级附魔台祈愿中：" to player
+        if the clicked button is 1: # offer 1
+            set the applied enchantments to sharpness 10 and unbreaking 10 and mending 1 and lure 10 and knockback 2 and smite 10 and sweeping 10 and looting 10 and fire aspect 5 and bane of arthropods 10
+
+on tab complete of "/pretend":
+    set tab completions for position 1 to all players

@@ -1,0 +1,22 @@
+on load:
+	set {_hdnc} to nether star named "&d高密下界核心" with lore "&7充满了下界的力量。" with nbt from "{CustomItem:HDNetheriteCore}"
+	set {_hdn} to netherite ingot named "&d高密下界合金" with lore "&7有点沉..." with nbt from "{CustomItem:HDNetheriteIngot}"
+	set {_hdnut} to netherite upgrade smithing template named "&d高密下界武器升级套件" with lore "&7最先进的镀层锻造技术。" with nbt from "{CustomItem:HDNetheriteUpgradeTool}"
+	set {_hds} to netherite sword named "&d高密下界合金剑" with lore "&7无锋无刃，劈颅碎股。" with nbt from "{CustomItem:HDNetheriteSword}"
+	set {_hda} to netherite axe named "&d高密下界合金斧" with lore "&7势大力沉，震透酆都。" with nbt from "{CustomItem:HDNetheriteAxe}"
+
+	register new stone cutting recipe for {_hdnut} using {_hdnc} with id "hdnetherite_upgrade_tool"
+	
+	register new smithing recipe:
+		id: "hd_netherite_sword"
+		result: {_hds}
+		template: {_hdnut}
+		base: netherite sword
+		addition: {_hdn}
+	
+	register new smithing recipe:
+		id: "hd_netherite_axe"
+		result: {_hda}
+		template: {_hdnut}
+		base: netherite axe
+		addition: {_hdn}

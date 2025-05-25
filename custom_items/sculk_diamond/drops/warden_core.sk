@@ -1,0 +1,3 @@
+on death of warden:
+    drop 1 heart of the sea named "&d破损的坚守者核心" with lore "&7古城坚守者体内的神秘生命之源，这个已经破损了" with nbt from "{CustomItem:WardenCore}" at attacker without velocity
+    drop 4 echo shard at attacker without velocity

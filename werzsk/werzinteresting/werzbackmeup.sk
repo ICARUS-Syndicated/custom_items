@@ -1,0 +1,48 @@
+command /backmeup [<text>] [<text>]:
+    trigger:
+        set {_arg_1} to arg-1
+        set {_arg_2} to arg-2
+        if {_arg_1} is not set:
+            {_arg_2} is not set
+
+            switch {backmeup.%player's uuid%.enable}:
+                case true:
+                    set {backmeup.%player's uuid%.enable} to false
+                    send "Off!" to sender
+                case false:
+                    set {backmeup.%player's uuid%.enable} to true
+                    send "On!" to sender
+
+        if {_arg_2} is not set:
+            set {_onbacker} to sender
+        else:
+            set {_onbacker} to {_arg_2} parsed as player
+            
+        if {_arg_1} is set:
+            # Who will back you up
+            set {_backer} to {_arg_1} parsed as player
+            
+            set {backmeup.%player's uuid%.backer} to {_backer}
+            send "You are backing up by %{backmeup.%player's uuid%.backer}%" to sender
+            set {backmeup.%player's uuid%.enable} to true
+
+on every tick:
+    loop all players:
+        set {_backer} to {backmeup.%loop-player's uuid%.enable}
+        if {_backer} is true:
+            set {_backer} to {backmeup.%loop-player's uuid%.backer}
+            if {_backer} is a player:
+                set {_now_loc} to location of {_backer}
+                set {_backer_yaw} to yaw of {_backer}
+                set {_backer_pitch} to pitch of {_backer}
+            
+                # 计算背后的位置
+                set {_behind_loc} to {_now_loc} - vector(0, 0, 2) rotated around y-axis by {_backer_yaw}
+            
+                # 传送玩家到背后的位置
+                teleport loop-player to {_behind_loc}
+                send actionbar "backer: %{_backer}% | %{_behind_loc}%" to loop-player
+
+on tab complete of "/backmeup":
+    set tab completions for position 1 to all players
+    set tab completions for position 2 to all players

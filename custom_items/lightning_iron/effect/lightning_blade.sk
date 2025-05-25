@@ -1,0 +1,55 @@
+on death:
+    if event-damage cause is player:
+        if nbt of attacker's tool has tag "CustomItem":
+            set {_ItemName} to string tag "CustomItem" of nbt of attacker's tool
+            if {_ItemName} is "LightningBlade":
+                if {lightning::%attacker%.combo} is set:
+                    set {lightning::%attacker%.combo} to 600
+                    strike lightning at the attacker
+                    add 1 to {lightning::%attacker%.killcount}
+                    send action bar "当前连杀数：%{lightning::%attacker%.killcount}%" to attacker
+                if {lightning::%attacker%.ArmorCooldown} is set:
+                    delete {lightning::%attacker%.ArmorCooldown}
+  
+            
+
+on right click with iron sword:
+    if nbt of player's tool has tag "CustomItem":
+        set {_ItemName} to string tag "CustomItem" of nbt of player's tool
+        if {_ItemName} is "LightningBlade":
+            if {lightning::%player%.BaldeCooldown} is not set:
+                set {lightning::%player%.combo} to 600
+                if {lightning::%player%.combobar} is not set:
+                    set {lightning::%player%.combobar} to boss bar with id "ComboBar%player's uuid%" with title "剩余充电时长" with color purple with progress {lightning::%player%.combo}/6
+                add player to {lightning::%player%.combobar}
+                if {lightning::%player%.killcount} is not set:
+                    set {lightning::%player%.killcount} to 0
+                strike lightning at the player
+                send "你的电充满了！" to player
+                set {lightning::%player%.BaldeCooldown} to 1
+                wait 10 minutes
+                delete {lightning::%player%.BaldeCooldown}
+
+every tick:
+    loop all players:
+        if {lightning::%loop-player%.combo} is set:
+            subtract 1 from {lightning::%loop-player%.combo}
+            set bar progress of {lightning::%loop-player%.combobar} to {lightning::%loop-player%.combo}/6
+            if {lightning::%loop-player%.combo} <= 0:
+                delete boss bar with id "ComboBar%loop-player's uuid%"
+                delete {lightning::%loop-player%.killcount}
+                delete {lightning::%loop-player%.combobar}
+                delete {lightning::%loop-player%.combo}
+                apply slowness potion of tier 2 without any particles to loop-player for 300 ticks
+                apply blindness potion of tier 2 without any particles to loop-player for 300 ticks
+                apply weakness potion of tier 2 without any particles to loop-player for 300 ticks
+                send "你萎了！" to the loop-player
+on load:
+    delete {lightning::%player%.BladeCooldown}
+    delete {lightning::%player%.combo}
+    delete {lightning::%player%.killcount}
+
+on join:
+    delete {lightning::%player%.BladeCooldown}
+    delete {lightning::%player%.combo}
+    delete {lightning::%player%.killcount}

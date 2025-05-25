@@ -1,0 +1,13 @@
+on load:
+    set {_sword} to netherite sword named "&d龙化之刃" with lore "&7来自终末的回响。" with nbt from "{CustomItem:DragonBlade}"
+    enchant {_sword} with sharpness 8
+    set {_e} to echo shard named "&e终末结晶" with lore "&7终末的能量精华" with nbt from "{CustomItem:EndEnergy}"
+    set {_d} to amethyst shard named "&e龙鳞" with lore "&7来自末地的龙鳞" with nbt from "{CustomItem:DragonScale}"
+    register shaped recipe:
+        id: "custom:dragonite_sword"
+        result: {_sword}
+        shape: "aba","bcb","aba"
+        ingredients:
+            set ingredient of "a" to {_e}
+            set ingredient of "b" to {_d}
+            set ingredient of "c" to netherite sword

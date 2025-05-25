@@ -1,0 +1,72 @@
+on right click:
+    if all:
+        nbt of player's tool has tag "CustomItem"
+        string tag "CustomItem" of nbt of player's tool is "SunlitBlade"
+    then:
+
+        #潜行吸收岩浆提高温度
+        if all:  
+            player is sneaking
+            slot 40 of player is lava bucket
+        then:
+            set {_u} to unix timestamp of now
+            set slot 40 of player to bucket
+            play sound "item.bucket.empty_lava"
+            set long tag "LastCharge" of nbt of player's tool to {_u}
+
+        #右键释放日耀能量
+        else:  
+            if {sunlit::%player%.cooldown} is not set:
+                set {sunlit::%player%.cooldown} to 1
+                set {_ray} to ray trace from player with max distance max(floor((524-{_u}+{_l})/50),4)
+                set {_result} to hit entity of {_ray}
+                set {_source} to damage source from arrow caused by player
+                set {_eye} to location of player's eye
+                
+                # 视听效果
+                set {_steps} to max(floor((524-{_u}+{_l})/50),4) * 2  # 控制粒子密度
+                loop {_steps} times:
+                    set {_currentDistance} to loop-value
+                    set {_l} to location {_currentDistance} meters in front of player's eyes
+                    make 1 of flame at {_l}
+                play sound "entity.blaze.shoot" to player
+
+                damage {_result} by 2 with {_source}
+                ignite {_result}
+                set {sunlit::%{_result}'s uuid%.targeted} to 1
+                wait 0.4 seconds
+                delete {sunlit::%player%.cooldown}
+
+        #右键更新温度显示
+        set {_u} to unix timestamp of now
+        set {_l} to long tag "LastCharge" of nbt of player's tool
+        if 524-{_u}+{_l} < 224 :
+            set the 2nd line of player's tool's lore to "当前温度：224°M"
+            send action bar "当前温度：224°M" to player
+        else:
+            set the 2nd line of player's tool's lore to "当前温度：%524 - {_u} + {_l}%°M"
+            send action bar "当前温度：%524 - {_u} + {_l}%" to player
+
+                     
+on damage:
+
+    #日耀爆炸
+    if all:
+        {sunlit::%victim's uuid%.targeted} is set
+        {sunlit::%victim's uuid%.cooldown} is not set
+    then:
+        set {sunlit::%victim's uuid%.cooldown} to 1
+        create safe explosion of force 1 at victim
+        if damage cause is not burning:
+            delete {sunlit::%victim's uuid%.targeted}
+        wait 3 seconds
+        delete {sunlit::%victim's uuid%.cooldown}
+          
+
+on death:
+    if {sunlit::%victim's uuid%.targeted} is set:
+        delete {sunlit::%victim's uuid%.targeted}
+on join:
+    delete {sunlit::%player%.cooldown}
+
+    

@@ -1,0 +1,12 @@
+on load:
+    set {_hdh} to netherite helmet named "&d高密下界合金头盔" with lore "&7你的脖子承受了太多。" with nbt from "{CustomItem:HDNetheriteHelmet}"
+    set {_hdc} to netherite chestplate named "&d高密下界合金胸甲" with lore "&7传来阵阵沉重的心跳。" with nbt from "{CustomItem:HDNetheriteChestplate}"
+    set {_hdl} to netherite leggings named "&d高密下界合金护腿" with lore "&7妈妈再也不用担心你被千年杀。" with nbt from "{CustomItem:HDNetheriteLeggings}"
+    set {_hdb} to netherite boots named "&d高密下界合金靴子" with lore "&7举步维艰。" with nbt from "{CustomItem:HDNetheriteBoots}"
+    set {_hdnc} to nether star named "&d高密下界核心" with lore "&7充满了下界的力量。" with nbt from "{CustomItem:HDNetheriteCore}"
+    set {_hdn} to netherite ingot named "&d高密下界合金" with lore "&7有点沉..." with nbt from "{CustomItem:HDNetheriteIngot}"
+
+    register new shaped recipe for {_hdh} using {_hdn},{_hdn},{_hdn},{_hdn},air,{_hdn},air,air,air with id "hd_netherite_helmet"
+    register new shaped recipe for {_hdc} using {_hdn},air,{_hdn},{_hdn},{_hdn},{_hdn},{_hdn},{_hdn},{_hdn} with id "hd_netherite_chestplate"
+    register new shaped recipe for {_hdl} using {_hdn},{_hdn},{_hdn},{_hdn},air,{_hdn},{_hdn},air,{_hdn} with id "hd_netherite_leggings"
+    register new shaped recipe for {_hdb} using air,air,air,{_hdn},air,{_hdn},{_hdn},air,{_hdn} with id "hd_netherite_boots"

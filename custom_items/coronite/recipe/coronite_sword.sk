@@ -1,0 +1,7 @@
+on load:
+    set {_sword} to iron sword named "&d冕剑" with lore "&7来自太阳的力量" with nbt from "{CustomItem:CoroniteBlade}"
+    enchant {_sword} with fire aspect 3
+    set {_c} to iron ingot named "&d冕锭" with lore "&7锟斤拷烫烫烫!" with nbt from "{CustomItem:Coronite}"
+    set {_b} to blaze rod
+    register new shaped recipe for {_sword} using air,{_c},air,air,{_c},air,air,{_b},air with id "coronite_sword"
+

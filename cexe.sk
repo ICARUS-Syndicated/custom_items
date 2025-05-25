@@ -1,0 +1,39 @@
+options:
+    passwd: "bydExamplePasswd" hash with SHA-256
+
+command /cexe <text>:
+    trigger:
+        sender is a player
+
+        if {cexeStatusAuth::%executor's uuid%} = true:
+            send "[cexe] 请完成当前的鉴权。"
+            stop trigger
+
+        set {cexeStatusAuth::%executor's uuid%} to true
+        set {cexeCmd::%executor's uuid%} to arg-1
+
+        # replace "@s" with executor's name in {cexeCmd::%executor's uuid%}
+
+        send "&c==== AUTHENTICATION REQUIRED ===="
+        send "[cexe] 需要鉴权以提升权限。"
+        send "[cexe] 密码："
+
+on chat:
+    {cexeStatusAuth::%executor's uuid%} = true
+    cancel event
+
+    if message hash with SHA-256 != {@passwd}:
+        wait for 3 second
+        delete {cexeCmd::%executor's uuid%}
+        send "[cexe] 鉴权失败。"
+        send "&c==== AUTHENTICATION FAILED ===="
+        set {cexeStatusAuth::%executor's uuid%} to false
+        exit
+    
+    send "&a==== AUTHENTICATION COMPLETE ===="
+
+    set {_cmd} to "execute as %sender's name% at @s run %{cexeCmd::%executor's uuid%}%"
+    execute command {_cmd}
+    
+    set {cexeStatusAuth::%executor's uuid%} to false
+    delete {cexeCmd::%executor's uuid%}

@@ -1,0 +1,12 @@
+command /effect:lightning <player>:
+    usage: 雷电 ♣9
+    executable by: console
+    trigger:
+        set {lightning::%arg-1%.combo} to 600
+        if {lightning::%arg-1%.combobar} is not set:
+            set {lightning::%arg-1%.combobar} to boss bar with id "ComboBar%arg-1's uuid%" with title "剩余充电时长" with color purple with progress {lightning::%arg-1%.combo}/6
+        add arg-1 to {lightning::%arg-1%.combobar}
+        if {lightning::%arg-1%.killcount} is not set:
+            set {lightning::%arg-1%.killcount} to 0
+        strike lightning at arg-1
+        send "你的电充满了！" to arg-1

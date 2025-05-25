@@ -1,0 +1,4 @@
+command /willingheart <player>:
+    trigger:
+        set {_l} to iron sword with nbt from "{CustomItem:LifeForADaredevil}"
+        give or drop {_l} to player

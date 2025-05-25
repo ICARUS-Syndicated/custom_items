@@ -1,0 +1,6 @@
+on load:
+  set {_sc} to leather named "&f凝滞水晶" with lore "&7样似一枚半透明水晶的奇异材料，散发着澄净的辉光" with nbt from "{CustomModelData:1,CustomItem:stagnant_crystal}"
+  set {_a} to diamond
+  set {_b} to Amethyst Shard
+  set {_c} to netherite ingot
+  register new shaped recipe for {_sc} using {_a},{_b},{_a},{_b},{_c},{_b},{_a},{_b},{_a} with id "custom:stagnant_crystal"

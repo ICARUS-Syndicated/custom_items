@@ -1,0 +1,3 @@
+on death of creeper:
+    if victim is powered:
+        drop 1 creeper head named "&e带电头颅" with lore "&7别手滑放在地上了" with nbt from "{CustomItem:LightningCore}" at attacker without velocity

@@ -1,0 +1,7 @@
+on load:
+    set {_SD} to diamond named "&d深黯钻石" with lore "&7似乎能听到来自远古的回响" with nbt from "{CustomItem:SculkDiamond}"
+    set {_e} to echo shard
+    set {_d} to diamond
+    register new shaped recipe for {_SD} using air,{_e},air,{_e},{_d},{_e},air,{_e},air with id "SculkDiamond"
+
+

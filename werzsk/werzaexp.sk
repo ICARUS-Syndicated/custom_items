@@ -1,0 +1,110 @@
+options:
+    prefix: &8[&6WerzAEXP&8]
+
+command /axp [<text>] [<integer=1>] [<text>] [<text>]:
+    usage: /axp [action] [value]
+    description: Convert your experience levels to experience bottles
+    executable by: players
+    trigger:
+        set {_action} to arg-1
+        set {_arg_2} to arg-2
+        set {_arg_3} to arg-3
+        set {_arg_4} to arg-4
+        set {_eula} to {advexp.%player's uuid%.eula}
+        
+
+        if {_action} is "bottle":
+                
+            set {_bottles} to {_arg_2}
+            set {_notifi} to {_arg_3}
+            if {_notifi} is not set:
+                set {_notifi} to "true"
+
+            if player's experience < {_bottles} * 5:
+                send "&c❌ 你没有足够的经验去转化经验瓶" to player
+                stop
+                
+            reduce player's experience by {_bottles} * 5
+
+            set {_item} to experience bottle named "&a%player%&r的经验瓶" with lore "&r经验瓶榨于：&b%player%(&l%player's uuid%)" with nbt from "{CustomItem:Cum,nchantments:[{id:'minecraft:unbreaking',lvl:1}],HideFlags:63}"
+            if {_notifi} is "true":
+                set line 2 of lore of {_item} to "源自于精魄：&b&l&n%player's experience%X&r | &b&l&n%player's level%L" 
+            give {_bottles} of {_item} to player
+
+            send "&a✓ 转换了 &6%{_bottles}%&a 经验瓶!" to player
+
+            stop
+
+        if {_action} is "milking-bottle":
+            set {_player} to {_arg_3} parsed as player
+            set {_bottles} to {_arg_2}
+            set {_notifi} to {_arg_4}
+
+            if {_player} is not set:
+                send "&c❌ 没有该玩家哦!" to sender
+                stop
+
+            if {_notifi} is not set:
+                set {_notifi} to "true"
+
+            if {_player}'s experience < {_bottles} * 5:
+                send "&c❌ 你没有足够的经验去转化经验瓶" to sender
+                stop
+                
+            reduce {_player}'s experience by {_bottles} * 5
+
+            set {_item} to experience bottle named "&a%{_player}%&r的经验瓶" with lore "&r经验瓶榨于：&b%{_player}%(&l%{_player}'s uuid%)"
+            if {_notifi} is "true":
+                set line 2 of lore of {_item} to "源自于精魄：&b&l&n%{_player}'s experience%X&r | &b&l&n%{_player}'s level%L" 
+            give {_bottles} of {_item} to player
+
+            send "&a✓ 转换了 %{_player}% 的 &6%{_bottles}%&a 经验瓶!" to sender
+            send "&c⚠&a 你被&6 %sender%&a 榨了整整 &6%{_bottles}%&a 罐经验瓶!" to {_player}
+
+            stop
+    
+        if {_action} = "eula":
+            checkeula(player)
+            stop
+
+        if {_action} = "wash":
+            if player's tool is not experience bottle:
+                send "{@prefix}&c您手上没有拿着经验瓶！" to player
+                stop
+            set {_amount} to amount of player's tool
+            # if checkeula(player) is false:
+            #     stop
+            set player's tool to air
+            give {_amount} of experience bottle to player
+            send "{@prefix}&a已将您手中的 &6%{_amount}% &a个经验瓶清洗为普通经验瓶！" to player
+            stop
+
+        if {_action} = "eulacheck":
+            send "{@prefix} &b当前EULA状态: %{advexp.%player's uuid%.eula}%" to player
+        else:
+            send "{@prefix} &c无效的操作, 请使用 /axp [bottle|eula|eulacheck]" to player
+
+function checkeula(p: player) :: boolean:
+    set {_eula} to {advexp.eula.%{_p}'s uuid%}
+
+    if {_eula} is set:
+        if {_eula} is true:
+            return true
+        else:
+            return false
+    else:
+        send "{@prefix}&a 📚 谢谢使用，但是使用之前需要您同意须知 🖊" to {_p}
+        send "&b    ① 经验转换可能会有损失，所以每次都会扣除5经验为本" to {_p}
+        send "&b    ② 依据此公式转换经验：总经验值=∑^(N-1) (i=0) * (7+7*i)=7N+7*(N-1)N/2" to {_p}
+        send "&b    ③ 可能每次转换都会缺失一些经验或者多出一些经验" to {_p}
+        send "&b    ④ 经验瓶是有损耗的，不能保证每次丢经验瓶都会恢复到本来的经验" to {_p}
+        send "&b    ⑤ 使用经验瓶系统需要交出你的灵魂以此换取铭印" to {_p}
+        send "&b    " to {_p}
+        send "&a 这边需要您签署同意声明：&r/axp eula 1 I-agree-with-everything-i-do:Everything-i-do-has-nothing-to-do-with-the-developer-and-the-server:And-i-dont-bother-with-any-admins-after-something-happens" to {_p}
+        send formatted "<tooltip:&7点击此处同意EULA>&a &r&b&n[点击同意]<run command:/axp eula 1 I-agree-with-everything-i-do:Everything-i-do-has-nothing-to-do-with-the-developer-and-the-server:And-i-dont-bother-with-any-admins-after-something-happens>" to {_p}
+        return false
+
+on tab complete of "/axp":
+    set tab completions for position 1 to "bottle", "eula", "wash", "milking-bottle"
+    if (tab arg-1) = "milking-bottle":
+        set tab completions for position 2 to all players

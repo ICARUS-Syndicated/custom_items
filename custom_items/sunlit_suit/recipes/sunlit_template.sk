@@ -1,0 +1,6 @@
+on load:
+    set {_d} to diamond
+    set {_c} to magma cream named "&o活化的烈焰人核心" with lore "&7高温加热使得离体的烈焰人核心恢复了活性" with nbt from "{CustomItem:ActivatedBlazeCore}"
+    set {_b} to blaze rod
+    set {_t} to blade pottery sherd named "&o锻造模板" with lore "&7日耀升级","可应用于,""冕剑" with nbt from "{CustomItem:SunlitTemplate}"
+    register new shaped recipe for {_t} using {_d},{_c},{_d},{_d},{_b},{_d},{_d},{_d},{_d} with id "sunlit_template"

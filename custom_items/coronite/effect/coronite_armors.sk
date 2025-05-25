@@ -1,0 +1,44 @@
+on damage:
+    if victim is a player:
+        set {coro::%victim%.count} to 0
+        set {coro::%victim%.helmet} to 0
+        set {coro::%victim%.chestplate} to 0
+        set {coro::%victim%.leggings} to 0
+        set {coro::%victim%.boots} to 0
+        if all:
+            nbt of victim's helmet has tag "CustomItem"
+            string tag "CustomItem" of nbt of victim's helmet is "CoroniteHelmet"
+        then:
+            set {coro::%victim%.helmet} to 1
+            add 1 to {coro::%victim%.count}
+        if all:
+            nbt of victim's chestplate has tag "CustomItem"
+            string tag "CustomItem" of nbt of victim's chestplate is "CoroniteChestplate"
+        then:
+            set {coro::%victim%.chestplate} to 1
+            add 1 to {coro::%victim%.count}
+        if all:
+            nbt of victim's leggings has tag "CustomItem"
+            string tag "CustomItem" of nbt of victim's leggings is "CoroniteLeggings"
+        then:
+            set {coro::%victim%.leggings} to 1
+            add 1 to {coro::%victim%.count}
+        if all:
+            nbt of victim's boots has tag "CustomItem"
+            string tag "CustomItem" of nbt of victim's boots is "CoroniteBoots"
+        then:
+            set {coro::%victim%.boots} to 1
+            add 1 to {coro::%victim%.count}
+        if event-damage cause is burning:
+            if {coro::%victim%.helmet} is 1:
+                apply potion of night vision of tier 1 without particles to victim for 21 ticks
+            if {coro::%victim%.chestplate} is 1:
+                apply potion of strength of tier 2 without particles to victim for 21 ticks
+                apply potion of haste of tier 2 without particles to victim for 21 ticks
+            if {coro::%victim%.leggings} is 1:
+                apply potion of speed of tier 2 without particles to victim for 21 ticks
+            if {coro::%victim%.boots} is 1:
+                apply potion of jump boost of tier 2 without particles to victim for 21 ticks
+            if {coro::%victim%} is 4:
+                cancel event
+        damage attacker by {coro::%victim%.count}/2 hearts with cause burning

@@ -1,0 +1,6 @@
+command /hell <player>:
+    trigger:
+        set {_l} to netherite hoe with nbt from "{CustomItem:SolemnLamentLeft}"
+        set {_r} to iron hoe with nbt from "{CustomItem:SolemnLamentRight}"
+        give or drop {_l} to player
+        give or drop {_r} to player
