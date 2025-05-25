@@ -18,7 +18,7 @@ function debugLine():
 
 #===========================#
 #                           #
-#   BlackFriend 猫娘控制逻辑   #
+#   NekoFriend 猫娘控制逻辑   #
 #                           #
 #===========================#
 
@@ -57,18 +57,18 @@ function unbind(target: offlineplayer, slave: offlineplayer):
         delete {BlackFrienedSlaveList::%{_target}'s uuid%::%loop-index%}
         delete {BlackFrwienedMaster::%{_slave}'s uuid%}
         delete {BlackFrienedMaster::%{_slave}'s uuid%}
-        delete {BlackFriendAction::%{_slave}'s uuid%::*}
-        delete {BlackFriendTaskList::%{_slave}'s uuid%::*}
+        delete {NekoFriendAction::%{_slave}'s uuid%::*}
+        delete {NekoFriendTaskList::%{_slave}'s uuid%::*}
         stop
 
 
-function getSlavesOf(target: offlineplayer):: objects:
+function getNekoOf(target: offlineplayer):: objects:
     # 获取玩家的猫娘列表
     #debug("{BlackFrienedSlaveList::%{_target}'s uuid%::*}: %{BlackFrienedSlaveList::%{_target}'s uuid%::*}%")
     #debug("{_target}'s uuid: %{_target}'s uuid%")
     #debug("{_target}: %{_target}%")
     #debug("SB's uuid: %offlineplayer("SBSBSBSBSBSBSBSB")'s uuid%")
-    debug("&c&l!!!&r触发getSlavesOf(target: offlineplayer)函数")
+    debug("&c&l!!!&r触发getNekoOf(target: offlineplayer)函数")
     debugLine()
     debug("传参>>> target: offlineplayer = %{_target}%")
     debugLine()
@@ -90,7 +90,7 @@ function getMasterOf(target: offlineplayer):: offlineplayer:
 
 #===========================#
 #                           #
-#   BlackFriend 任务发布逻辑   #
+#   NekoFriend 任务发布逻辑   #
 #                           #
 #===========================#
 
@@ -101,7 +101,7 @@ function getTaskCount(target: player):: number:
     debug("传参>>> target: player = %{_target}%")
     debugLine()
 
-    return size of {BlackFriendTaskList::%{_target}'s uuid%::*}
+    return size of {NekoFriendTaskList::%{_target}'s uuid%::*}
 
 function publishTask(target: player, task: text):
 
@@ -118,7 +118,7 @@ function publishTask(target: player, task: text):
     set {_sha} to {_origin} hashed with SHA-256
     #debug({_sha})
 
-    set {BlackFriendTaskList::%{_target}'s uuid%::%{_sha}%} to {_task}
+    set {NekoFriendTaskList::%{_target}'s uuid%::%{_sha}%} to {_task}
 
 function deleteTask(target: player, taskID: text):
 
@@ -128,13 +128,13 @@ function deleteTask(target: player, taskID: text):
     debug("传参>>> taskID: text = %{_taskID}%")
     debugLine()
 
-    if {BlackFriendTaskList::%{_target}'s uuid%::%{taskID}%} is set:
-        delete {BlackFriendTaskList::%{_target}'s uuid%::%{taskID}%}
+    if {NekoFriendTaskList::%{_target}'s uuid%::%{taskID}%} is set:
+        delete {NekoFriendTaskList::%{_target}'s uuid%::%{taskID}%}
     else:
-        loop {BlackFriendTaskList::%{_target}'s uuid%::*}:
+        loop {NekoFriendTaskList::%{_target}'s uuid%::*}:
             loop-index.startsWith({_taskID})
             debug("&b%loop-index%")
-            delete {BlackFriendTaskList::%{_target}'s uuid%::%loop-index%}
+            delete {NekoFriendTaskList::%{_target}'s uuid%::%loop-index%}
             stop
 
 function getTaskListOf(target: offlineplayer):: objects:
@@ -144,7 +144,7 @@ function getTaskListOf(target: offlineplayer):: objects:
     debug("传参>>> target: offlineplayer = %{_target}%")
     debugLine()
 
-    loop {BlackFriendTaskList::%{_target}'s uuid%::*}:
+    loop {NekoFriendTaskList::%{_target}'s uuid%::*}:
         add loop-index to {_shaList::*}
     return {_shaList::*}
 

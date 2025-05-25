@@ -21,7 +21,7 @@ on inventory click:
         stop
     if index of event-slot is 4:
         set {_choose1} to a new chest inventory with 3 rows named "&e选择猫娘抢经验"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose1} to skull of offlineplayer("%loop-value%") named "&e抢%loop-value%的经验"
         open {_choose1} to event-player
     if index of event-slot is 0:
@@ -31,32 +31,32 @@ on inventory click:
         open {_choose2} to event-player
     if index of event-slot is 18:
         set {_choose3} to a new chest inventory with 3 rows named "&e选择猫娘解绑"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose3} to skull of offlineplayer("%loop-value%") named "&e解绑%loop-value%"
         open {_choose3} to event-player
     if index of event-slot is 14:
         set {_choose100} to a new chest inventory with 3 rows named "&e选择控制的猫娘"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose100} to skull of offlineplayer("%loop-value%") named "&c控制%loop-value%"
         open {_choose100} to event-player
     if index of event-slot is 8:
         set {_choose4} to a new chest inventory with 3 rows named "&e选择要传送的猫娘"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose4} to skull of offlineplayer("%loop-value%") named "&d传送%loop-value%"
         open {_choose4} to event-player
     if index of event-slot is 26:
         set {_choose5} to a new chest inventory with 3 rows named "&e选择要过来的猫娘"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose5} to skull of offlineplayer("%loop-value%") named "&b%loop-value%过来"
         open {_choose5} to event-player
     if index of event-slot is 12:
         set {_choose7} to a new chest inventory with 3 rows named "&e选择要更改的猫娘"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose7} to skull of offlineplayer("%loop-value%") named "&7更改%loop-value%"
         open {_choose7} to event-player
     if index of event-slot is 22:
         set {_choose6} to a new chest inventory with 3 rows named "&e选择要看哪个猫娘的背包"
-        loop getSlavesOf(event-player):
+        loop getNekoOf(event-player):
             set slot loop-iteration - 1 of {_choose6} to skull of offlineplayer("%loop-value%") named "&c看%loop-value%的包"
         open {_choose6} to event-player
 #--------------------------------------------抢猫娘经验
@@ -65,7 +65,7 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             make player execute command "/frd getXP %loop-value%"
             stop loop
@@ -75,7 +75,7 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             make console execute command "/skin set 1145141919810 %loop-value%"
             send "&a已将 &b%loop-value% &a的&e皮肤&a设为 &c猫娘"
@@ -97,7 +97,7 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             make player execute command "/frd unbind %loop-value%"
             stop loop
@@ -107,7 +107,7 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             make player execute command "/frd tp %loop-value%"
             close event-player's inventory 
@@ -118,7 +118,7 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             make player execute command "/frd tphere %loop-value%"
             close event-player's inventory 
@@ -129,7 +129,7 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             close event-player's inventory 
             make player execute command "/frd invsee %loop-value%"
@@ -140,46 +140,46 @@ on inventory click:
     cancel event
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         if loop-iteration - 1 = event-slot:
             set {choose::%event-player's uuid%} to "%loop-value%"
             set {_plmenu} to a new chest inventory with 3 row named "&c%{choose::%event-player's uuid%}%的权限控制"
             set slot 4 of {_plmenu} to lime wool named "&a开启所有权限"
             set slot 22 of {_plmenu} to red wool named "&c关闭所有权限"
-            if {BlackFriendAction::%loop-value's uuid%::chat} isn't true or false:
-                set {BlackFriendAction::%loop-value's uuid%::chat} to true
-            if {BlackFriendAction::%loop-value's uuid%::move} isn't true or false:
-                set {BlackFriendAction::%loop-value's uuid%::move} to true
-            if {BlackFriendAction::%loop-value's uuid%::break} isn't true or false:
-                set {BlackFriendAction::%loop-value's uuid%::break} to true
-            if {BlackFriendAction::%loop-value's uuid%::place} isn't true or false:
-                set {BlackFriendAction::%loop-value's uuid%::place} to true
-            if {BlackFriendAction::%loop-value's uuid%::attack} isn't true or false:
-                set {BlackFriendAction::%loop-value's uuid%::attack} to true
-            if {BlackFriendAction::%loop-value's uuid%::eat} isn't true or false:
-                set {BlackFriendAction::%loop-value's uuid%::eat} to true
+            if {NekoFriendAction::%loop-value's uuid%::chat} isn't true or false:
+                set {NekoFriendAction::%loop-value's uuid%::chat} to true
+            if {NekoFriendAction::%loop-value's uuid%::move} isn't true or false:
+                set {NekoFriendAction::%loop-value's uuid%::move} to true
+            if {NekoFriendAction::%loop-value's uuid%::break} isn't true or false:
+                set {NekoFriendAction::%loop-value's uuid%::break} to true
+            if {NekoFriendAction::%loop-value's uuid%::place} isn't true or false:
+                set {NekoFriendAction::%loop-value's uuid%::place} to true
+            if {NekoFriendAction::%loop-value's uuid%::attack} isn't true or false:
+                set {NekoFriendAction::%loop-value's uuid%::attack} to true
+            if {NekoFriendAction::%loop-value's uuid%::eat} isn't true or false:
+                set {NekoFriendAction::%loop-value's uuid%::eat} to true
 #***************************************分隔符
-            if {BlackFriendAction::%loop-value's uuid%::attack} is true :
+            if {NekoFriendAction::%loop-value's uuid%::attack} is true :
                 set slot 10 of {_plmenu} to diamond sword named "&c点击关闭攻击权限"
             else:
                 set slot 10 of {_plmenu} to wooden sword named "&a点击开启攻击权限"
-            if {BlackFriendAction::%loop-value's uuid%::break} is true :
+            if {NekoFriendAction::%loop-value's uuid%::break} is true :
                 set slot 11 of {_plmenu} to diamond pickaxe named "&c点击关闭破坏权限"
             else:
                 set slot 11 of {_plmenu} to wooden pickaxe named "&a点击开启破坏权限"
-            if {BlackFriendAction::%loop-value's uuid%::move} is true :
+            if {NekoFriendAction::%loop-value's uuid%::move} is true :
                 set slot 12 of {_plmenu} to diamond boots named "&c点击关闭行走权限"
             else:
                 set slot 12 of {_plmenu} to leather boots named "&a点击开启行走权限"
-            if {BlackFriendAction::%loop-value's uuid%::place} is true :
+            if {NekoFriendAction::%loop-value's uuid%::place} is true :
                 set slot 14 of {_plmenu} to Brick Block named "&c点击关闭放置权限"
             else:
                 set slot 14 of {_plmenu} to Structure Void named "&a点击开启放置权限"
-            if {BlackFriendAction::%loop-value's uuid%::chat} is true :
+            if {NekoFriendAction::%loop-value's uuid%::chat} is true :
                 set slot 15 of {_plmenu} to name tag named "&c点击关闭聊天权限"
             else:
                 set slot 15 of {_plmenu} to barrier named "&a点击开启聊天权限"
-            if {BlackFriendAction::%loop-value's uuid%::eat} is true :
+            if {NekoFriendAction::%loop-value's uuid%::eat} is true :
                 set slot 16 of {_plmenu} to cooked beef named "&c点击关闭吃吃吃权限"
             else:
                 set slot 16 of {_plmenu} to Poisonous Potato named "&a点击开启吃吃吃权限"
@@ -189,112 +189,112 @@ on inventory click:
 on inventory click:
     if type of clicked inventory is player inventory:
         stop
-    loop getSlavesOf(event-player):
+    loop getNekoOf(event-player):
         name of event-inventory is "&c%loop-value%的权限控制"
         cancel event
         if {choose::%event-player's uuid%} = loop-value:
             if index of event-slot is 4:
                 send "&a已将 &b%loop-value% &a的&e所有权限&a设为 &b开启"
                 send "&a主人已将你的&e所有权限&a设为了 &b开启" to offlineplayer("%loop-value%")
-                set {BlackFriendAction::%loop-value's uuid%::move} to true
-                set {BlackFriendAction::%loop-value's uuid%::break} to true
-                set {BlackFriendAction::%loop-value's uuid%::place} to true
-                set {BlackFriendAction::%loop-value's uuid%::eat} to true
-                set {BlackFriendAction::%loop-value's uuid%::chat} to true
-                set {BlackFriendAction::%loop-value's uuid%::attack} to true
+                set {NekoFriendAction::%loop-value's uuid%::move} to true
+                set {NekoFriendAction::%loop-value's uuid%::break} to true
+                set {NekoFriendAction::%loop-value's uuid%::place} to true
+                set {NekoFriendAction::%loop-value's uuid%::eat} to true
+                set {NekoFriendAction::%loop-value's uuid%::chat} to true
+                set {NekoFriendAction::%loop-value's uuid%::attack} to true
             if index of event-slot is 22:
                 send "&a已将 &b%loop-value% &a的&e所有权限&a设为 &c关闭"
                 send "&a主人已将你的&e所有权限&a设为了 &c关闭" to offlineplayer("%loop-value%")
-                set {BlackFriendAction::%loop-value's uuid%::move} to false
-                set {BlackFriendAction::%loop-value's uuid%::break} to false
-                set {BlackFriendAction::%loop-value's uuid%::place} to false
-                set {BlackFriendAction::%loop-value's uuid%::eat} to false
-                set {BlackFriendAction::%loop-value's uuid%::chat} to false
-                set {BlackFriendAction::%loop-value's uuid%::attack} to false
+                set {NekoFriendAction::%loop-value's uuid%::move} to false
+                set {NekoFriendAction::%loop-value's uuid%::break} to false
+                set {NekoFriendAction::%loop-value's uuid%::place} to false
+                set {NekoFriendAction::%loop-value's uuid%::eat} to false
+                set {NekoFriendAction::%loop-value's uuid%::chat} to false
+                set {NekoFriendAction::%loop-value's uuid%::attack} to false
             if index of event-slot is 10:
-                if {BlackFriendAction::%loop-value's uuid%::attack} is false:
+                if {NekoFriendAction::%loop-value's uuid%::attack} is false:
                     send "&a已将 &b%loop-value% &a的&e攻击&a设为 &b开启"
                     send "&a主人已将你的&e攻击&a权限设为了 &b开启" to offlineplayer("%loop-value%")
-                    set {BlackFriendAction::%loop-value's uuid%::attack} to true
+                    set {NekoFriendAction::%loop-value's uuid%::attack} to true
                 else:
-                    if {BlackFriendAction::%loop-value's uuid%::attack} is true:
+                    if {NekoFriendAction::%loop-value's uuid%::attack} is true:
                         send "&a已将 &b%loop-value% &a的&e攻击&a设为 &c关闭"
                         send "&a主人已将你的&e攻击&a权限设为了 &c关闭" to offlineplayer("%loop-value%")
-                        set {BlackFriendAction::%loop-value's uuid%::attack} to false
+                        set {NekoFriendAction::%loop-value's uuid%::attack} to false
             if index of event-slot is 11:
-                if {BlackFriendAction::%loop-value's uuid%::break} is false:
+                if {NekoFriendAction::%loop-value's uuid%::break} is false:
                     send "&a已将 &b%loop-value% &a的&e破坏&a设为 &b开启"
                     send "&a主人已将你的&e破坏&a权限设为了 &b开启" to offlineplayer("%loop-value%")
-                    set {BlackFriendAction::%loop-value's uuid%::break} to true
+                    set {NekoFriendAction::%loop-value's uuid%::break} to true
                 else:
-                    if {BlackFriendAction::%loop-value's uuid%::break} is true:
+                    if {NekoFriendAction::%loop-value's uuid%::break} is true:
                         send "&a已将 &b%loop-value% &a的&e破坏&a设为 &c关闭"
                         send "&a主人已将你的&e破坏&a权限设为了 &c关闭" to offlineplayer("%loop-value%")
-                        set {BlackFriendAction::%loop-value's uuid%::break} to false
+                        set {NekoFriendAction::%loop-value's uuid%::break} to false
             if index of event-slot is 12:
-                if {BlackFriendAction::%loop-value's uuid%::move} is false:
+                if {NekoFriendAction::%loop-value's uuid%::move} is false:
                     send "&a已将 &b%loop-value% &a的&e移动&a设为 &b开启"
                     send "&a主人已将你的&e移动&a权限设为了 &b开启" to offlineplayer("%loop-value%")
-                    set {BlackFriendAction::%loop-value's uuid%::move} to true
+                    set {NekoFriendAction::%loop-value's uuid%::move} to true
                 else:
-                    if {BlackFriendAction::%loop-value's uuid%::move} is true:
+                    if {NekoFriendAction::%loop-value's uuid%::move} is true:
                         send "&a已将 &b%loop-value% &a的&e移动&a设为 &c关闭"
                         send "&a主人已将你的&e移动&a权限设为了 &c关闭" to offlineplayer("%loop-value%")
-                        set {BlackFriendAction::%loop-value's uuid%::move} to false
+                        set {NekoFriendAction::%loop-value's uuid%::move} to false
             if index of event-slot is 14:
-                if {BlackFriendAction::%loop-value's uuid%::place} is false:
+                if {NekoFriendAction::%loop-value's uuid%::place} is false:
                     send "&a已将 &b%loop-value% &a的&e放置&a设为 &b开启"
                     send "&a主人已将你的&e放置&a权限设为了 &b开启" to offlineplayer("%loop-value%")
-                    set {BlackFriendAction::%loop-value's uuid%::place} to true
+                    set {NekoFriendAction::%loop-value's uuid%::place} to true
                 else:
-                    if {BlackFriendAction::%loop-value's uuid%::place} is true:
+                    if {NekoFriendAction::%loop-value's uuid%::place} is true:
                         send "&a已将 &b%loop-value% &a的&e放置&a设为 &c关闭"
                         send "&a主人已将你的&e放置&a权限设为了 &c关闭" to offlineplayer("%loop-value%")
-                        set {BlackFriendAction::%loop-value's uuid%::place} to false
+                        set {NekoFriendAction::%loop-value's uuid%::place} to false
             if index of event-slot is 15:
-                if {BlackFriendAction::%loop-value's uuid%::chat} is false:
+                if {NekoFriendAction::%loop-value's uuid%::chat} is false:
                     send "&a已将 &b%loop-value% &a的&e聊天&a设为 &b开启"
                     send "&a主人已将你的&e聊天&a权限设为了 &b开启" to offlineplayer("%loop-value%")
-                    set {BlackFriendAction::%loop-value's uuid%::chat} to true
+                    set {NekoFriendAction::%loop-value's uuid%::chat} to true
                 else:
-                    if {BlackFriendAction::%loop-value's uuid%::chat} is true:
+                    if {NekoFriendAction::%loop-value's uuid%::chat} is true:
                         send "&a已将 &b%loop-value% &a的&e聊天&a设为 &c关闭"
                         send "&a主人已将你的&e聊天&a权限设为了 &c关闭" to offlineplayer("%loop-value%")
-                        set {BlackFriendAction::%loop-value's uuid%::chat} to false
+                        set {NekoFriendAction::%loop-value's uuid%::chat} to false
             if index of event-slot is 16:
-                if {BlackFriendAction::%loop-value's uuid%::eat} is false:
+                if {NekoFriendAction::%loop-value's uuid%::eat} is false:
                     send "&a已将 &b%loop-value% &a的&e吃吃吃&a设为 &b开启"
                     send "&a主人已将你的&e吃吃吃&a权限设为了 &b开启" to offlineplayer("%loop-value%")
-                    set {BlackFriendAction::%loop-value's uuid%::eat} to true
+                    set {NekoFriendAction::%loop-value's uuid%::eat} to true
                 else:
-                    if {BlackFriendAction::%loop-value's uuid%::eat} is true:
+                    if {NekoFriendAction::%loop-value's uuid%::eat} is true:
                         send "&a已将 &b%loop-value% &a的&e吃吃吃&a设为 &c关闭"
                         send "&a主人已将你的&e吃吃吃&a权限设为了 &c关闭" to offlineplayer("%loop-value%")
-                        set {BlackFriendAction::%loop-value's uuid%::eat} to false
+                        set {NekoFriendAction::%loop-value's uuid%::eat} to false
             set {_plmenu} to a new chest inventory with 3 row named "&c%loop-value%的权限控制"
             set slot 4 of {_plmenu} to lime wool named "&a开启所有权限"
             set slot 22 of {_plmenu} to red wool named "&c关闭所有权限"
-            if {BlackFriendAction::%loop-value's uuid%::attack} is true:
+            if {NekoFriendAction::%loop-value's uuid%::attack} is true:
                 set slot 10 of {_plmenu} to diamond sword named "&c点击关闭攻击权限"
             else:
                 set slot 10 of {_plmenu} to wooden sword named "&a点击开启攻击权限"
-            if {BlackFriendAction::%loop-value's uuid%::break} is true:
+            if {NekoFriendAction::%loop-value's uuid%::break} is true:
                 set slot 11 of {_plmenu} to diamond pickaxe named "&c点击关闭破坏权限"
             else:
                 set slot 11 of {_plmenu} to wooden pickaxe named "&a点击开启破坏权限"
-            if {BlackFriendAction::%loop-value's uuid%::move} is true:
+            if {NekoFriendAction::%loop-value's uuid%::move} is true:
                 set slot 12 of {_plmenu} to diamond boots named "&c点击关闭行走权限"
             else:
                 set slot 12 of {_plmenu} to leather boots named "&a点击开启行走权限"
-            if {BlackFriendAction::%loop-value's uuid%::place} is true:
+            if {NekoFriendAction::%loop-value's uuid%::place} is true:
                 set slot 14 of {_plmenu} to Brick Block named "&c点击关闭放置权限"
             else:
                 set slot 14 of {_plmenu} to Structure Void named "&a点击开启放置权限"
-            if {BlackFriendAction::%loop-value's uuid%::chat} is true:
+            if {NekoFriendAction::%loop-value's uuid%::chat} is true:
                 set slot 15 of {_plmenu} to name tag named "&c点击关闭聊天权限"
             else:
                 set slot 15 of {_plmenu} to barrier named "&a点击开启聊天权限"
-            if {BlackFriendAction::%loop-value's uuid%::eat} is true:
+            if {NekoFriendAction::%loop-value's uuid%::eat} is true:
                 set slot 16 of {_plmenu} to cooked beef named "&c点击关闭吃吃吃权限"
             else:
                 set slot 16 of {_plmenu} to Poisonous Potato named "&a点击开启吃吃吃权限"

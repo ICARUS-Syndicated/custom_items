@@ -1,3 +1,0 @@
-on damage:
-	if attack cooldown of attacker < 1:
-		send action bar "&e这不是1.8.9..." to attacker

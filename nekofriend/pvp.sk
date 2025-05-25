@@ -8,7 +8,7 @@ on damage:
     getMasterOf(victim) != attacker
     if {pvpStatus::%victim's uuid%} is false:
         if victim is attacker:
-            send "&a不要自残力qwq" to attacker
+            send "&a不要自残力 qwq" to attacker
         else:
             cancel event
             send "&c对方关闭了 PVP" to attacker

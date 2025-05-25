@@ -1,50 +1,50 @@
 on player move:
-    {BlackFriendAction::%player's uuid%::move} = false
+    {NekoFriendAction::%player's uuid%::move} = false
     send "&c你主人不让你移动！" to event-player
     cancel event
 
 on chat:
-    {BlackFriendAction::%player's uuid%::chat} = false
+    {NekoFriendAction::%player's uuid%::chat} = false
     send "&c你主人不让你聊天！" to event-player
     cancel event
 
 on command "/w":
-    {BlackFriendAction::%sender's uuid%::chat} = false
+    {NekoFriendAction::%sender's uuid%::chat} = false
     send "&c你主人不让你聊天！" to event-player
     cancel event
 
 on command "/tell":
-    {BlackFriendAction::%sender's uuid%::chat} = false
+    {NekoFriendAction::%sender's uuid%::chat} = false
     send "&c你主人不让你聊天！" to event-player
     cancel event
 
 on command "/me":
-    {BlackFriendAction::%sender's uuid%::chat} = false
+    {NekoFriendAction::%sender's uuid%::chat} = false
     send "&c你主人不让你聊天！" to event-player
     cancel event
 
 on command "/msg":
-    {BlackFriendAction::%sender's uuid%::chat} = false
+    {NekoFriendAction::%sender's uuid%::chat} = false
     send "&c你主人不让你聊天！" to event-player
     cancel event
 
 on break:
-    {BlackFriendAction::%player's uuid%::break} = false
+    {NekoFriendAction::%player's uuid%::break} = false
     send "&c你主人不让你破坏！" to event-player
     cancel event
 
 on place:
-    {BlackFriendAction::%player's uuid%::place} = false
+    {NekoFriendAction::%player's uuid%::place} = false
     send "&c你主人不让你放置！" to event-player
     cancel event
 
 on eat:
-    {BlackFriendAction::%player's uuid%::eat} = false
+    {NekoFriendAction::%player's uuid%::eat} = false
     send "&c你主人不让你吃吃吃吃吃吃吃！" to event-player
     cancel event
 
 on damage:
     attacker is a player
-    {BlackFriendAction::%attacker's uuid%::attack} = false
+    {NekoFriendAction::%attacker's uuid%::attack} = false
     send "&c你主人不让你攻击！" to attacker
     cancel event

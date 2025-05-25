@@ -54,7 +54,7 @@ command /frd <text>:
                 send "&c对方已经有主人（%getMasterOf(player({_args}[1]))%）了！"
                 stop trigger
             #判断是否已有受邀请，如果是的话就拒绝发送请求
-            if {BlackFriendRequest::%sender's uuid%} is set:
+            if {NekoFriendRequest::%sender's uuid%} is set:
                 send "&c你有未决邀请，暂无法向他人发送邀请！"
                 stop trigger
             # 判断对方是否是自己的主人：
@@ -62,7 +62,7 @@ command /frd <text>:
                 send "&c对方是你的主人耶？"
                 stop trigger
             
-            if {BlackFriendRequest::%player({_args}[1])'s uuid%} is set:
+            if {NekoFriendRequest::%player({_args}[1])'s uuid%} is set:
                 send "&c对方有未决邀请！"
                 stop trigger
 
@@ -73,9 +73,9 @@ command /frd <text>:
             send "不同意请输入&e /frd refuse" to player({_args}[1])
             send "你向 &a%{_args}[1]% &r发送了猫娘邀请（60s后超时）"
             send "输入 &e/frd cancel &r取消"
-            set {BlackFriendRequest::%player({_args}[1])'s uuid%} to sender's uuid
+            set {NekoFriendRequest::%player({_args}[1])'s uuid%} to sender's uuid
             # 设置timer second3
-            set {BlackFriendRequestTimer::%player({_args}[1])'s uuid%} to unix timestamp of now
+            set {NekoFriendRequestTimer::%player({_args}[1])'s uuid%} to unix timestamp of now
             stop trigger
 
         if {_args}[0] = "unbind":
@@ -90,25 +90,25 @@ command /frd <text>:
 
         if {_args}[0] = "accept":
             # 接受绑定请求
-            if {BlackFriendRequest::%sender's uuid%} isn't set:
+            if {NekoFriendRequest::%sender's uuid%} isn't set:
                 send "&c你没有未决邀请！"
                 stop trigger
             send "&a你同意了对方的邀请"
-            send "&a%sender's name%同意了你的邀请" to Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%sender's uuid%}))            
-            bind(Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%sender's uuid%})), sender)
-            delete {BlackFriendRequest::%sender's uuid%}
-            delete {BlackFriendRequestTimer::%sender's uuid%}
+            send "&a%sender's name%同意了你的邀请" to Bukkit.getPlayer(UUID.fromString({NekoFriendRequest::%sender's uuid%}))            
+            bind(Bukkit.getPlayer(UUID.fromString({NekoFriendRequest::%sender's uuid%})), sender)
+            delete {NekoFriendRequest::%sender's uuid%}
+            delete {NekoFriendRequestTimer::%sender's uuid%}
             stop trigger
 
         if {_args}[0] = "refuse":
             # 拒绝绑定请求
-            if {BlackFriendRequest::%sender's uuid%} isn't set:
+            if {NekoFriendRequest::%sender's uuid%} isn't set:
                 send "&c你没有未决邀请！"
                 stop trigger
-            send "&c你拒绝了%{BlackFriendRequest::%sender's uuid%}%的邀请"
-            send "&c%sender's name%拒绝了你的邀请" to Bukkit.getPlayer(UUID.fromString({BlackFriendRequest::%sender's uuid%}))
-            delete {BlackFriendRequest::%sender's uuid%}
-            delete {BlackFriendRequestTimer::%sender's uuid%}
+            send "&c你拒绝了%{NekoFriendRequest::%sender's uuid%}%的邀请"
+            send "&c%sender's name%拒绝了你的邀请" to Bukkit.getPlayer(UUID.fromString({NekoFriendRequest::%sender's uuid%}))
+            delete {NekoFriendRequest::%sender's uuid%}
+            delete {NekoFriendRequestTimer::%sender's uuid%}
             stop trigger
 
 
@@ -137,19 +137,19 @@ command /frd <text>:
 
         if {_args}[0] = "cancel":
             # 取消发送的绑定请求
-            loop {BlackFriendRequest::*}:
+            loop {NekoFriendRequest::*}:
                 loop-value = sender's uuid
                 set {_slave} to Bukkit.getPlayer(UUID.fromString(loop-index))
                 send "&c你取消了对%{_slave}%的邀请"
                 send "&c%sender's name%取消了对你的邀请" to {_slave}
-                delete {BlackFriendRequest::%{_slave}'s uuid%}
+                delete {NekoFriendRequest::%{_slave}'s uuid%}
                 stop trigger
             send "&c你没有邀请别人！"
             stop trigger
             
         if {_args}[0] = "list":
-            # send "%getSlavesOf(offlineplayer({_args}[1]))%"
-            loop getSlavesOf(sender):
+            # send "%getNekoOf(offlineplayer({_args}[1]))%"
+            loop getNekoOf(sender):
                 send "%loop-value%"
             stop trigger
 
@@ -230,20 +230,20 @@ command /frd <text>:
 
             if {_args}[2] != "all":
                 debug("%player({_args}[1])'s uuid% | %{_args}[2]% | %Boolean.valueOf({_args}[3])%")
-                debug("%{BlackFriendAction::%player({_args}[1])'s uuid%::%{_args}[2]%}%")
-                debug("%{BlackFriendAction::%player({_args}[1])'s uuid%::move}%")
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::%{_args}[2]%} to Boolean.valueOf({_args}[3])
+                debug("%{NekoFriendAction::%player({_args}[1])'s uuid%::%{_args}[2]%}%")
+                debug("%{NekoFriendAction::%player({_args}[1])'s uuid%::move}%")
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::%{_args}[2]%} to Boolean.valueOf({_args}[3])
                 send "&a已将 &b%{_args}[1]% &a的 &e%{_args}[2]% 权限&a设为 &b%{_args}[3]%"
                 send "&a主人已将你的 &b%{_args}[2]% &a设为了 &b%{_args}[3]%" to player({_args}[1])
             else:
                 send "&a已将 &b%{_args}[1]% &a的&e所有权限&a设为 &b%{_args}[3]%"
                 send "&a主人已将你的&e所有权限&a设为了 &b%{_args}[3]%" to player({_args}[1])
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::move} to Boolean.valueOf({_args}[3])
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::break} to Boolean.valueOf({_args}[3])
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::place} to Boolean.valueOf({_args}[3])
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::eat} to Boolean.valueOf({_args}[3])
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::chat} to Boolean.valueOf({_args}[3])
-                set {BlackFriendAction::%player({_args}[1])'s uuid%::attack} to Boolean.valueOf({_args}[3])
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::move} to Boolean.valueOf({_args}[3])
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::break} to Boolean.valueOf({_args}[3])
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::place} to Boolean.valueOf({_args}[3])
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::eat} to Boolean.valueOf({_args}[3])
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::chat} to Boolean.valueOf({_args}[3])
+                set {NekoFriendAction::%player({_args}[1])'s uuid%::attack} to Boolean.valueOf({_args}[3])
             stop trigger
 
         if {_args}[0] = "admin":
@@ -258,7 +258,7 @@ command /frd <text>:
 
             if {_args}[1] = "getlist":
                 send "猫娘列表："
-                loop getSlavesOf(offlineplayer({_args}[2])):
+                loop getNekoOf(offlineplayer({_args}[2])):
                     send "%loop-value%"
                 stop trigger
             if {_args}[1] = "unbind":
@@ -362,26 +362,26 @@ on tab complete of "/frd":
     if (tab arg-1) = "bind":
         set tab completions for position 2 to all players
     if (tab arg-1) = "unbind":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
     #if (tab arg-1) = "task":
-    #    set tab completions for position 2 to getSlavesOf(player)
+    #    set tab completions for position 2 to getNekoOf(player)
     #    set tab completions for position 3 to "del", "finish", "publish" and "list"
     #    if (tab arg-3) = "del":
     #        set tab completions for position 4 to getTaskListOf(offlineplayer(tab arg-2))
     if (tab arg-1) = "offer":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
         set tab completions for position 3 to all players
     if (tab arg-1) = "ctl":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
         set tab completions for position 3 to "move", "break", "place", "eat", "chat", "attack" and "all"
         set tab completions for position 4 to "true", and "false"
     if (tab arg-1) = "invsee":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
     if (tab arg-1) = "getXp":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
     if (tab arg-1) = "tp":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
     if (tab arg-1) = "tphere":
-        set tab completions for position 2 to getSlavesOf(player)
+        set tab completions for position 2 to getNekoOf(player)
     if (tab arg-1) = "debugMode":
         set tab completions for position 2 to "true" and "false"

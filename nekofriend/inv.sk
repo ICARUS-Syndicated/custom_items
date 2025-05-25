@@ -10,10 +10,6 @@ on right click on player:
         {@sb_world_detech} = true
         send "&c猫娘所在世界禁用了Invsee" to getMasterOf(player)
         stop trigger
-    if event-player is in world("huodong"):
-        {@sb_world_detech} = true
-        send "&c猫娘所在世界禁用了Invsee" to getMasterOf(player)
-        stop trigger
 
     open event-entity's inventory for player
 
